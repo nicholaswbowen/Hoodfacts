@@ -8,6 +8,9 @@ import {SessionServiceModule} from './services/session.service';
 import LayoutComponent from './layout/layout.module';
 import HomeComponent from './home/home.module';
 import AuthComponent from './auth/auth.module';
+import Profile from './profile/profile.module';
+import UsersIndex from './usersIndex/usersIndex.module';
+import Navigation from './navigation/navigation.module';
 
 const name = 'app';
 const dependencies = [
@@ -16,7 +19,10 @@ const dependencies = [
   core, // YOUR CORE DEPENDENCIES
   HomeComponent,
   LayoutComponent,
-  AuthComponent
+  AuthComponent,
+  Profile,
+  UsersIndex,
+  Navigation
 ];
 
 angular.module(name, dependencies)
