@@ -40,18 +40,6 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
   });
 }));
 
-// passport.use(new SoundCloudTokenStrategy({
-//     clientID: process.env.SOUNDCLOUD_CLIENT_ID,
-//     clientSecret: process.env.SOUNDCLOUD_CLIENT_SECRET,
-//     callbackURL: 'http://127.0.0.1:3000/auth/soundcloud/callback'
-//   },
-//   function(accessToken, refreshToken, profile, done) {
-//     User.findOne({ soundcloudId: profile.id }, function (err, user) {
-//       return done(err, user);
-//     });
-//   }
-// ));
-
 passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_KEY,
     consumerSecret: process.env.TWITTER_SECRET,
