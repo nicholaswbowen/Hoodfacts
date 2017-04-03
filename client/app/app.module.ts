@@ -8,7 +8,8 @@ import {SessionServiceModule} from './services/session.service';
 import LayoutComponent from './layout/layout.module';
 import HomeComponent from './home/home.module';
 import AuthComponent from './auth/auth.module';
-
+import gMapComponent from './gMap/gMap.module';
+import BoundariesController from './boundaries/boundaries.module'
 const name = 'app';
 const dependencies = [
   'ui.router',
@@ -16,7 +17,9 @@ const dependencies = [
   core, // YOUR CORE DEPENDENCIES
   HomeComponent,
   LayoutComponent,
-  AuthComponent
+  AuthComponent,
+  gMapComponent,
+  BoundariesController
 ];
 
 angular.module(name, dependencies)
