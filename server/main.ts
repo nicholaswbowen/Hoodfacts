@@ -19,6 +19,7 @@ import {cookieList} from './lib/dev';
 import * as user from './api/user';
 import * as auth from './api/auth';
 import * as boundary from './api/boundary';
+import * as profile from './api/profile';
 // replacing deprecated promise
 (<any> mongoose).Promise = global.Promise;
 
@@ -105,6 +106,7 @@ app.use('/', routes);
 app.use('/api', user);
 app.use('/api', auth);
 app.use('/api', boundary);
+app.use('/api', profile);
 // THIS IS THE INTERCEPTION OF ALL OTHER REQ
 // After server routes / static / api
 // redirect 404 to home for the sake of AngularJS client-side routes

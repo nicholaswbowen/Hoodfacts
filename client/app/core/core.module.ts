@@ -3,6 +3,8 @@ import coreConstants from './core.constants';
 import coreFilters from './core.filters';
 import authInterceptor from './interceptor.factory';
 import * as ngMap from 'ngMap';
+import {ProfileService} from '../services/profile.service';
+
 import 'ngstorage';
 import 'angular-resource';
 import 'angular-messages';
@@ -24,6 +26,7 @@ export default angular.module('app.core', [
   coreFilters,
   authInterceptor,
   UserServiceModule,
-  ngMap
+  ngMap,
+  ProfileService
 ])
 .name;
