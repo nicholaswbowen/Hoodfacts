@@ -21,10 +21,10 @@ const Config = [
         currentSession: ['UserService', '$sessionStorage', '$timeout',
           (UserService, $sessionStorage, $timeout) => {
             return UserService.getCurrentUser().then((user) => {
-              $sessionStorage.user = user.data;
+              $sessionStorage.user = user;
               return;
             }).catch((user) => {
-              $sessionStorage.user = user.data;
+              $sessionStorage.user = user;
               return;
             });
           }
