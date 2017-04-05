@@ -3,7 +3,7 @@ class ProfileController {
   public currentUser;
   public profileID;
   public profile;
-  public alerts;
+  public alerts = [];
 
   constructor(
     private ProfileService: ProfileServiceClass,
@@ -11,7 +11,11 @@ class ProfileController {
     SessionService,
     $stateParams
   ) {
-    this.profileID = $stateParams['username'];
+    if (!$stateParams['username'] || $stateParams['username'] === '') {
+      this.profileID = SessionService.getUser().username;
+    } else {
+      this.profileID = $stateParams['username'];
+    }
     this.getProfile();
   }
 

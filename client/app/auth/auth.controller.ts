@@ -8,7 +8,9 @@ export class AuthController {
     private AUTHENTICATION_STATUS,
     private $state: ng.ui.IStateService,
     private toastr,
-    private $sessionStorage
+    private $sessionStorage,
+    private $localStorage,
+    private SessionService
   ) {
 
   }
@@ -27,9 +29,22 @@ export class AuthController {
       .then((response) => {
         this.$sessionStorage.user = response.user;
         this.toastr.success(`Welcome, ${this.user.username}`, this.AUTHENTICATION_STATUS.success);
-        this.$state.go('profile');
+        this.$state.go('profile', {username: this.user.username}, {reload: true, notify: true});
       }).catch((e) => {
         this.toastr.error('Authentication failed.', 'Error:401');
+      });
+  }
+
+  public logout() {
+    this.UserService.logout()
+      .then((response) => {
+        delete this.$localStorage.token;
+        this.SessionService.destroy();
+        this.toastr.info(`${this.user.username} has logged out.`, 'Goodbye');
+        this.$state.go('home');
+      })
+      .catch((e) => {
+        this.toastr.error('Unable to logout.', 'Error');
       });
   }
 }

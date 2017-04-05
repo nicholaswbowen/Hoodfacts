@@ -4,7 +4,11 @@ import * as passport from 'passport';
 import * as jwt from 'jsonwebtoken';
 import {User} from '../models/User';
 import * as moment from 'moment';
+<<<<<<< HEAD
 import {setCookie} from '../lib/auth';
+=======
+import Profile from '../models/Profile';
+>>>>>>> feature/dev
 let router = express.Router();
 
 router.get('/auth/currentuser', (req, res, next) => res.json(req.user || {}));
@@ -17,7 +21,15 @@ router.post('/auth/register', function(req, res, next) {
   user.save(function(err, user) {
     // this is a validation error so 400 bad req
     if (err) return next({message: 'user did not save', error: err});
-    if (user) return res.json({message: 'Registration complete.'});
+    let userProfile = new Profile();
+    console.log(req.body);
+    userProfile.username = req.body.username;
+    userProfile.email = req.body.email;
+    userProfile.save((err, profile) => {
+        if (err) return next({error: err});
+        console.log(profile);
+        res.status(200).json({ message: 'Registration complete.' });
+    });
   });
 });
 

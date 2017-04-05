@@ -25,12 +25,13 @@ class UsersIndexController {
 
       }
       public delete (username) {
-        confirm('Are you sure you want to delete this?');
+        if (confirm ('Are you sure you want to delete this?')) {
           this.UserService.deleteUser(username).then(() => {
               this.$state.go('usersIndex', null, { reload: true, notify: true });
           }).catch((err) => {
             this.alerts.push({type: 'danger', message: 'Could not delete User.'});
           });
+        }
       }
   };
 
