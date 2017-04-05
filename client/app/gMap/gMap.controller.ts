@@ -15,7 +15,7 @@ class gMapController{
   }
   public bootStrapMap(){
     let self = this;
-    GoogleMapsLoader.KEY = 'YOURKEYHERE';
+    GoogleMapsLoader.KEY = 'AIzaSyCUVX_TYWU5VOBjTr5B4-lN_H0X9OgNimM`';
     GoogleMapsLoader.load(function(google) {
        self.map = new google.maps.Map(document.getElementById('map'), {
          center: {lat: 47.673988, lng:-122.121513}, //lat: 47.673988, lng:-122.121513
