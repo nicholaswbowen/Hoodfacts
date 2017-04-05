@@ -27,7 +27,7 @@ export class AuthController {
       .then((response) => {
         this.$sessionStorage.user = response.user;
         this.toastr.success(`Welcome, ${this.user.username}`, this.AUTHENTICATION_STATUS.success);
-        this.$state.go('reload');
+        this.$state.go('profile');
       }).catch((e) => {
         this.toastr.error('Authentication failed.', 'Error:401');
       });

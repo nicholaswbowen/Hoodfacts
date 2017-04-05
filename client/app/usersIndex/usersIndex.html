@@ -1,0 +1,14 @@
+<hr>
+<div class="panel panel-success" ng-repeat="user in vm.users track by $index">
+
+    <ul>
+        <li>
+            {{user.username}}
+            <div>
+                <button class="btn btn-danger btn-sm ng-scope" ng-click="vm.delete(user.username)" ng-if="!row.isEditing">Delete</button>
+            </div>
+        </li>
+    </ul>
+</div>
+<br>
+<alerts messages="vm.alerts"></alerts>
