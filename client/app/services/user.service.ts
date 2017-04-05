@@ -31,8 +31,13 @@ export class UserServiceClass {
   public getUser(name: string) {
     return this.UserResource.get({name}).$promise;
   }
+
   public listUsers(name: string) {
     return this.UserResource.query().$promise;
+  }
+
+  public deleteUser(name: {username: string, password: string, email: string}) {
+      return this.UserResource.delete({name}).$promise;
   }
 }
 

@@ -18,10 +18,11 @@ export class AuthController {
     this.UserService.register(this.newUser)
       .then((response) => {
         this.toastr.success(`Please sign in ${this.newUser.username}`, `Fantastic.`);
+        this.$state.go('auth', null, {reload: true, notify: true});
 
       })
       .catch((e) => {
-        this.toastr.warning(`${e.message}`, `Nope.`);
+        this.toastr.warning(`${e.message}`, `Nope, you're already registered son.`);
       });
   }
   public login() {
