@@ -4,11 +4,8 @@ import * as passport from 'passport';
 import * as jwt from 'jsonwebtoken';
 import {User} from '../models/User';
 import * as moment from 'moment';
-<<<<<<< HEAD
 import {setCookie} from '../lib/auth';
-=======
 import Profile from '../models/Profile';
->>>>>>> feature/dev
 let router = express.Router();
 
 router.get('/auth/currentuser', (req, res, next) => res.json(req.user || {}));

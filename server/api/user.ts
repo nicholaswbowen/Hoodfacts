@@ -5,6 +5,7 @@ import * as jwt from 'jsonwebtoken';
 import {User} from '../models/User';
 import {guard} from '../lib/guard';
 import {isSession} from '../lib/auth';
+import Profile from '../models/Profile';
 let router = express.Router();
 
 router.get('/user/:name',
@@ -26,8 +27,11 @@ router.delete('/users/:username', (req, res, next) => {
         return res.status(200).json({message: 'Deleted!'});
     });
 });
-router.get('/users', (req, res, next) => {
-  User.find().then((users) => {
+router.get('/users',
+  isSession,
+  guard(['user:read']),
+  (req, res, next) => {
+User.find().then((users) => {
     res.json(users);
   }).catch ((err) => {
     return next({message: 'can not list users', error: err});
