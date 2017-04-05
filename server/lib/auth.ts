@@ -15,6 +15,24 @@ export const isSession = function isSession (req, res, next) {
   }
 };
 
+export const setCookie = function setCookie (name: string, payload: string) {
+  return function (req, res, next) {
+    let sess = {
+      maxAge: 24 * 60 * 60 * 1000 * 2, //  2 days
+      secure: false,
+      httpOnly: true
+    };
+
+    // set to secure in production
+    if (process.env.NODE_ENV === 'production') {
+      sess.secure = true;
+    }
+
+    res.cookie(name, payload, sess);
+    return res.json({isAuth: req.isAuthenticated()});
+  };
+};
+
 export const hasRole = function hasRole (role: string) {
   return function (req, res, next) {
     if (req.user) {

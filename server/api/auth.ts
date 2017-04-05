@@ -4,6 +4,7 @@ import * as passport from 'passport';
 import * as jwt from 'jsonwebtoken';
 import {User} from '../models/User';
 import * as moment from 'moment';
+import {setCookie} from '../lib/auth';
 let router = express.Router();
 
 router.get('/auth/currentuser', (req, res, next) => res.json(req.user || {}));
@@ -35,7 +36,7 @@ router.post('/auth/login', function(req, res, next) {
           req.session.save(function (err){
             if (err) return next({message: 'session failed', error: err, status: 500});
             let token = user.generateJWT();
-            return res.json({token});
+            return setCookie('access_token', token)(req, res, next);
           });
         } else {
           res.json({message: 'please try again.'}).status(500);
