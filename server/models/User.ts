@@ -11,7 +11,7 @@ export interface ITwitter {
 }
 
 export interface IUser extends mongoose.Document {
-  username: string;
+  username: {type: String, lowercase: true, unique: true};
   email: string;
   passwordHash: string;
   salt: string;
@@ -24,7 +24,7 @@ export interface IUser extends mongoose.Document {
 }
 
 let UserSchema = new mongoose.Schema({
-  username: { type: String, unique: true},
+  username: {type: String, lowercase: true, unique: true, required: true},
   email: {
     type: String,
     unique: true,

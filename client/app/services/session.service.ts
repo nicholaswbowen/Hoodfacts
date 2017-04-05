@@ -20,6 +20,11 @@ export class SessionServiceClass {
 
   public isAuthorized(roles) {
     let user = this.getUser();
+
+    if (!user) {
+      return false;
+    }
+
     if (!user['roles']) {
       return false;
     }

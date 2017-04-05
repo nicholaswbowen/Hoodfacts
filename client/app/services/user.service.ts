@@ -8,7 +8,7 @@ export class UserServiceClass {
     private $resource: ng.resource.IResourceService,
     private $http: ng.IHttpService
   ) {
-    this.UserResource = $resource('/api/user/:name');
+    this.UserResource = $resource('/api/users/:name');
     this.AuthResource = $resource('/api/auth/:action');
   }
 
@@ -21,7 +21,7 @@ export class UserServiceClass {
   }
 
   public getCurrentUser() {
-    return this.$http.get('/api/auth/currentuser');
+    return this.AuthResource.get({action: 'currentuser'}).$promise;
   }
 
   public logout() {
@@ -30,6 +30,9 @@ export class UserServiceClass {
 
   public getUser(name: string) {
     return this.UserResource.get({name}).$promise;
+  }
+  public listUsers(name: string) {
+    return this.UserResource.query().$promise;
   }
 }
 

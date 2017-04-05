@@ -67,13 +67,15 @@ passport.use(new TwitterStrategy({
 ));
 
 passport.use(new LocalStrategy({session: true}, function(username: string, password: string, done) {
-  User.findOne({ username }).select('+passwordHash +salt')
-    .exec(function(err, user) {
-      if (err) return done(err);
-      if (!user) return done(null, false, { message: 'Incorrect username.' });
-      if (!user.validatePassword(password)) return done(null, false, { message: 'Password does not match.' });
-      user.passwordHash = undefined;
-      user.salt = undefined;
-      return done(null, user);
+    let lc = username.toLowerCase();
+    console.log(lc);
+    User.findOne({ username }).select('+passwordHash +salt')
+        .exec(function(err, user) {
+          if (err) return done(err);
+          if (!user) return done(null, false, { message: 'Incorrect username.' });
+          if (!user.validatePassword(password)) return done(null, false, { message: 'Password does not match.' });
+          user.passwordHash = undefined;
+          user.salt = undefined;
+          return done(null, user);
     });
 }));
