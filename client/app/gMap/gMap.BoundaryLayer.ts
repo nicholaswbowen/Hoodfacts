@@ -2,7 +2,7 @@
 declare var canvas;
 declare var google;
 class boundaryLayer{
-  public test = 'sup';
+  public test = 0;
   public overlayProjection;
   public boundaryOverlay;
   public canvas;
