@@ -13,6 +13,6 @@ export class ProfileServiceClass {
 };
 ProfileServiceClass.$inject = ['$resource'];
 
-export const ProfileService = angular.module('ifp.services.profile', [])
+export const ProfileService = angular.module('app.services.profile', [])
     .service('ProfileService', ProfileServiceClass)
     .name;

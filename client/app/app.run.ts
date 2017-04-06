@@ -8,6 +8,7 @@ export default [
   'AUTH_EVENTS',
   'toastr',
   '$localStorage',
+  '$timeout',
   function run(
     $rootScope,
     UserService,
@@ -16,15 +17,16 @@ export default [
     $state,
     AUTH_EVENTS,
     toastr,
-    $localStorage
+    $localStorage,
+    $timeout
   ) {
     $rootScope.$on('$stateChangeStart', (event, next) => {
       UserService.getCurrentUser().then((user) => {
-        $sessionStorage.user = user.data;
-        !user.data['username'] ? $localStorage['token'] = {} : angular.noop();
+        $sessionStorage.user = user;
+        !user['username'] ? $localStorage['token'] = {} : angular.noop();
       }).catch((user) => {
-        $sessionStorage.user = user.data;
-        !user.data['username'] ? $localStorage['token'] = {} : angular.noop();
+        $sessionStorage.user = user;
+        !user['username'] ? $localStorage['token'] = {} : angular.noop();
       });
 
       if (next.data) {
@@ -32,6 +34,9 @@ export default [
         if (authorizedRoles && !SessionService.isAuthorized(authorizedRoles)) {
           event.preventDefault();
           toastr.warning('I can\'t let you do that.', `I'm sorry Michael`);
+          $timeout(() => {
+            $state.go('auth');
+          }, 1500);
         }
       }
     });
