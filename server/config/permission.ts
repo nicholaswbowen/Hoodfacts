@@ -1,11 +1,10 @@
 export const permission = {
   user: [
-    'car:read',
-    'car:write'
+    'default:none'
   ],
   admin: [
-    'car:read',
-    'car:write',
-    'car:delete'
+    'user:read',
+    'user:write',
+    'user:delete'
   ]
 };
