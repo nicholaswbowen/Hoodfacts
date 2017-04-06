@@ -19,7 +19,10 @@ router.get('/user/:name',
       return res.json(u);
   });
 });
-router.delete('/users/:username', (req, res, next) => {
+router.delete('/user/:username',
+  isSession,
+  guard(['user:delete']),
+  (req, res, next) => {
     if (req.params.username === 'admin') return res.status(401).json
     ({message: 'Yeah right! Admins can not be deleted!!!'});
     User.remove ({username: req.params.username}, (err) => {
@@ -27,7 +30,7 @@ router.delete('/users/:username', (req, res, next) => {
         return res.status(200).json({message: 'Deleted!'});
     });
 });
-router.get('/users',
+router.get('/user',
   isSession,
   guard(['user:read']),
   (req, res, next) => {

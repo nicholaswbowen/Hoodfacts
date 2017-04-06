@@ -15,6 +15,19 @@ export const isSession = function isSession (req, res, next) {
   }
 };
 
+export const isSessionBool = function isSession (req, res, next) {
+  console.log('why');
+  if (req.session.passport && req.cookies['access_token']) {
+    let decoded = simple.decode(req.cookies['access_token'], process.env.JWT_SECRET);
+    console.log(req.session.passport.user['username'] === decoded.username);
+    return req.session.passport.user['username'] === decoded.username
+      ? true
+      : false;
+  } else {
+    return false;
+  }
+};
+
 export const setCookie = function setCookie (name: string, payload: string) {
   return function (req, res, next) {
     let sess = {

@@ -1,6 +1,6 @@
 export const permission = {
   user: [
-
+    'default:none'
   ],
   admin: [
     'user:read',
