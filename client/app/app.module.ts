@@ -9,7 +9,6 @@ import LayoutComponent from './layout/layout.module';
 import HomeComponent from './home/home.module';
 import AuthComponent from './auth/auth.module';
 import gMapComponent from './gMap/gMap.module';
-import BoundariesController from './boundaries/boundaries.module'
 import Profile from './profile/profile.module';
 import UsersIndex from './usersIndex/usersIndex.module';
 import Navigation from './navigation/navigation.module';
@@ -24,7 +23,6 @@ const dependencies = [
   LayoutComponent,
   AuthComponent,
   gMapComponent,
-  BoundariesController,
   Profile,
   UsersIndex,
   Navigation

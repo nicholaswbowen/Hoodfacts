@@ -15,6 +15,11 @@
   height:100vh;
   position: absolute;
 }
+#boundaryOverlay{
+  position: relative;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+}
 $bootstrap-sass-asset-helper: false !default;
 // Spacelab 3.3.7
 // Variables
