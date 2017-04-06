@@ -6219,3 +6219,8 @@ button.close {
   width: 100vw;
   height: 100vh;
   position: absolute; }
+
+#boundaryOverlay {
+  position: relative;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px; }
