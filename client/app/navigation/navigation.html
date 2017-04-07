@@ -6,3 +6,12 @@
   <li><button class="btn btn-success" ui-sref="profile({username: vm.currentUser.username})" ng-if="vm.isAuthenticated">Profile</button></li>
   <li><button class="btn btn-danger" ui-sref="usersIndex" ng-if="vm.isAuthenticated && vm.isAuthorized('admin')">Users Index</button></li>
 </ul>
+
+<div id="settingsDrop" class="dropdown">
+  <button class="btn btn-primary dropdown-toggle">Options</button>
+  <div class="dropdown-menu">
+    <button class="dropdown-item">option1</button>
+    <button class="dropdown-item">option2</button>
+    <button class="dropdown-item">option3</button>
+  </div>
+</div>
