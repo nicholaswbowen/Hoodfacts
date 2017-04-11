@@ -7,7 +7,7 @@ class gMapController{
   public boundaryOverlay;
   public count = 0;
   public $onInit;
-  constructor(private $http){
+  constructor(private $localStorage){
     this.$onInit = () => {
       this.bootStrapMap();
     }
@@ -23,7 +23,7 @@ class gMapController{
         streetViewControl: false,
         styles: MAP_TERRAIN_STYLE
       });
-      self.map.addListener('dragend', () => {
+      self.map.addListener('center_changed', () => {
         window.setTimeout(()=>{
           self.boundaryOverlay.draw();
         },0)
@@ -57,12 +57,12 @@ class gMapController{
            panes.overlayLayer.removeChild(panes.overlayLayer.firstChild);
          }
          panes.overlayLayer.appendChild(this.canvas_);
-         new BoundaryLayer(projection,this.canvas_,self.$http,bounds.getNorthEast(),bounds.getSouthWest());
+         new BoundaryLayer(projection,this.canvas_,self.$localStorage,bounds.getNorthEast(),bounds.getSouthWest());
        };
        self.boundaryOverlay = new boundaryOverlay(self.map);
      });
   }
 }
 
-gMapController.$inject = ['$http'];
+gMapController.$inject = ['$localStorage'];
 export default gMapController;
