@@ -6,7 +6,7 @@ class SidebarController {
        document.getElementById("mySidenav").style.width = "250px";
    }
 
-   /* Set the width of the side navigation to 0 */
+   
     public closeNav() {
        document.getElementById("mySidenav").style.width = "0";
    }
