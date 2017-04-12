@@ -49,7 +49,11 @@
               ng-model="vm.newUser.password"
               ng-required="true"
               ng-minlength="6">
-
+              <div ng-messages="registrationForm.confirmPassword.$error" style="color:red" role="alert">
+                  <div ng-message="required">Please fill out all fields</div>
+                  <div ng-message="minlength">Passwords must be at least 6 characters long</div>
+                </div>
+              </div>
           </div>
         </div>
 
@@ -62,15 +66,13 @@
               ng-required="true"
               ng-minlength="6">
           </div>
-          <div ng-messages="registrationForm.confirmPassword.$error" style="color:maroon" role="alert">
-              <div ng-message="required">You did not enter a field</div>
-              <div ng-message="minlength">Your field is too short, you need at least 6 characters</div>
+          <div ng-messages="registrationForm.confirmPassword.$error" style="color:red" role="alert">
+              <div ng-message="required">Please fill out all fields</div>
+              <div ng-message="minlength">Passwords must be at least 6 characters long</div>
             </div>
         </div>
 
-        <div class="btn-group">
           <button aria-label="Login" class="btn btn-primary" type="submit" ng-disabled="registrationForm.$invalid">Register</button>
-        </div>
       </form>
       <pre>{{registrationForm | json:2}}</pre>
     </uib-tab>
