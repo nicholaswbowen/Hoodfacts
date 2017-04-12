@@ -12,6 +12,7 @@ import gMapComponent from './gMap/gMap.module';
 import Profile from './profile/profile.module';
 import UsersIndex from './usersIndex/usersIndex.module';
 import Navigation from './navigation/navigation.module';
+import Sidebar from './sidebar/sidebar.module';
 
 
 const name = 'app';
@@ -25,7 +26,8 @@ const dependencies = [
   gMapComponent,
   Profile,
   UsersIndex,
-  Navigation
+  Navigation,
+  Sidebar
 ];
 
 angular.module(name, dependencies)
