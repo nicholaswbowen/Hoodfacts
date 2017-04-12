@@ -7,7 +7,9 @@ class gMapController{
   public boundaryOverlay;
   public count = 0;
   public $onInit;
-  constructor(private $localStorage){
+  public lastBounds;
+  public currentBounds;
+  constructor(){
     this.$onInit = () => {
       this.bootStrapMap();
     }
@@ -57,12 +59,23 @@ class gMapController{
            panes.overlayLayer.removeChild(panes.overlayLayer.firstChild);
          }
          panes.overlayLayer.appendChild(this.canvas_);
-         new BoundaryLayer(projection,this.canvas_,self.$localStorage,bounds.getNorthEast(),bounds.getSouthWest());
+         self.currentBounds = self.setBounds(bounds.getNorthEast(),bounds.getSouthWest())
+         self.lastBounds = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds);
+         self.lastBounds = self.currentBounds;
        };
        self.boundaryOverlay = new boundaryOverlay(self.map);
      });
   }
+  public setBounds(ne,sw){
+    let viewBounds:any = {};
+    const OFFSET = 0.1;
+    viewBounds.xMax = ne.lat()+OFFSET;
+    viewBounds.yMax = ne.lng()+OFFSET;
+    viewBounds.xMin = sw.lat()-OFFSET;
+    viewBounds.yMin = sw.lng()-OFFSET;
+    return viewBounds;
+  }
 }
 
-gMapController.$inject = ['$localStorage'];
+gMapController.$inject = [];
 export default gMapController;
