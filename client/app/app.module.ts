@@ -3,6 +3,7 @@ import config from './app.config';
 import run from './app.run';
 import core from './core/core.module';
 import 'angular-ui-router';
+import 'angular-ui-bootstrap';
 import {SessionServiceModule} from './services/session.service';
 
 import LayoutComponent from './layout/layout.module';
@@ -13,9 +14,9 @@ import Profile from './profile/profile.module';
 import UsersIndex from './usersIndex/usersIndex.module';
 import Navigation from './navigation/navigation.module';
 
-
 const name = 'app';
 const dependencies = [
+  'ui.bootstrap',
   'ui.router',
   SessionServiceModule,
   core, // YOUR CORE DEPENDENCIES

@@ -3,7 +3,7 @@ class ProfileController {
   public currentUser;
   public profileID;
   public profile;
-
+  public date = new Date();
   constructor(
     private ProfileService: ProfileServiceClass,
     private $state: ng.ui.IStateService,

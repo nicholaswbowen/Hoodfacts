@@ -7,10 +7,25 @@ class NavigationController {
       $stateParams: ng.ui.IStateParamsService,
       private SessionService: SessionServiceClass,
       private UserService,
-      private $sessionStorage
+      private $sessionStorage,
+      private $uibModal
   ) {
     this.isAuth();
   }
+
+  public openProfile() {
+    this.$uibModal.open({
+      component: 'profile'
+    });
+  };
+
+  public openAuth() {
+    this.$uibModal.open({
+      component: 'auth',
+      size: 'lg'
+    });
+  };
+
   public isAuthorized(roles: string) {
     return this.SessionService.isAuthorized(roles);
   }
@@ -44,7 +59,8 @@ NavigationController.$inject = [
   '$stateParams',
   'SessionService',
   'UserService',
-  '$sessionStorage'
+  '$sessionStorage',
+  '$uibModal'
 ];
 
 export default NavigationController;

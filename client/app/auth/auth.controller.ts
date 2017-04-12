@@ -17,6 +17,7 @@ export class AuthController {
   public register () {
     this.UserService.register(this.newUser)
       .then((response) => {
+        this.newUser = {};
         this.toastr.success(`Please sign in ${this.newUser.username}`, `Fantastic.`);
         this.$state.go('auth', null, {reload: true, notify: true});
 

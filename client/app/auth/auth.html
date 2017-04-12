@@ -1,49 +1,81 @@
-<form ng-submit="vm.login(vm.user)" class="well">
-  <div class="form-group">
-    <label class="col-sm-2">User Name</label>
-    <div class="col-sm-10">
-      <input class="form-control" type="text" ng-model="vm.user.username" ng-required="true">
-    </div>
-  </div>
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title">Modal title</h4>
+</div>
+<div class="modal-body">
+  <uib-tabset>
+    <uib-tab heading="Login">
+      <form name="loginForm" ng-submit="vm.login(vm.user)" class="well">
+        <div class="form-group">
+          <label class="col-sm-2">User Name</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" ng-model="vm.user.username" ng-required="true">
+          </div>
+        </div>
 
-  <div class="form-group">
-    <label class="col-sm-2">Password</label>
-    <div class="col-sm-10">
-      <input class="form-control" type="password" ng-model="vm.user.password" ng-required="true">
-    </div>
-  </div>
+        <div class="form-group">
+          <label class="col-sm-2">Password</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="password" ng-model="vm.user.password" ng-required="true">
+          </div>
+        </div>
 
-  <button aria-label="Login" class="btn btn-primary" type="submit">Login</button>
-</form>
+        <button aria-label="Login" class="btn btn-primary" type="submit" ng-disabled="loginForm.$invalid">Login</button>
+      </form>
+      <pre>{{loginForm | json:2}}</pre>
+    </uib-tab>
 
-<form ng-submit="vm.register(vm.newUser)" class="well">
-  <div class="form-group">
-    <label class="col-sm-2">User Name</label>
-    <div class="col-sm-10">
-      <input class="form-control" type="text" ng-model="vm.newUser.username" ng-required="true">
-    </div>
-  </div>
+    <uib-tab heading="Registration">
+      <form name="registrationForm" ng-submit="vm.register(vm.newUser)" class="well">
+        <div class="form-group">
+          <label class="col-sm-2">User Name</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" ng-model="vm.newUser.username" ng-required="true">
+          </div>
+        </div>
 
-  <div class="form-group">
-    <label class="col-sm-2">Email</label>
-    <div class="col-sm-10">
-      <input class="form-control" type="email" ng-model="vm.newUser.email" ng-required="true">
-    </div>
-  </div>
+        <div class="form-group">
+          <label class="col-sm-2">Email</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="email" ng-model="vm.newUser.email" ng-required="true">
+          </div>
+        </div>
 
-  <div class="form-group">
-    <label class="col-sm-2">Password</label>
-    <div class="col-sm-10">
-      <input class="form-control" type="password" ng-model="vm.newUser.password" ng-required="true">
-    </div>
-  </div>
+        <div class="form-group">
+          <label class="col-sm-2">Password</label>
+          <div class="col-sm-10">
+            <input class="form-control"
+              type="password"
+              ng-model="vm.newUser.password"
+              ng-required="true"
+              ng-minlength="6">
 
-  <div class="form-group">
-    <label class="col-sm-2">Confirm Password</label>
-    <div class="col-sm-10">
-      <input class="form-control" type="password" ng-model="vm.newUser.confirmPassword" ng-required="true">
-    </div>
-  </div>
+          </div>
+        </div>
 
-  <button aria-label="Login" class="btn btn-primary" type="submit">Login</button>
-</form>
+        <div class="form-group">
+          <label class="col-sm-2">Confirm Password</label>
+          <div class="col-sm-10">
+            <input name="confirmPassword" class="form-control"
+              type="password"
+              ng-model="vm.newUser.confirmPassword"
+              ng-required="true"
+              ng-minlength="6">
+          </div>
+          <div ng-messages="registrationForm.confirmPassword.$error" style="color:maroon" role="alert">
+              <div ng-message="required">You did not enter a field</div>
+              <div ng-message="minlength">Your field is too short, you need at least 6 characters</div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+          <button aria-label="Login" class="btn btn-primary" type="submit" ng-disabled="registrationForm.$invalid">Register</button>
+        </div>
+      </form>
+      <pre>{{registrationForm | json:2}}</pre>
+    </uib-tab>
+  </uib-tabset>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
