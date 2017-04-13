@@ -11,7 +11,6 @@ import AuthComponent from './auth/auth.module';
 import gMapComponent from './gMap/gMap.module';
 import Profile from './profile/profile.module';
 import UsersIndex from './usersIndex/usersIndex.module';
-import Navigation from './navigation/navigation.module';
 import Sidebar from './sidebar/sidebar.module';
 
 
@@ -26,7 +25,6 @@ const dependencies = [
   gMapComponent,
   Profile,
   UsersIndex,
-  Navigation,
   Sidebar
 ];
 

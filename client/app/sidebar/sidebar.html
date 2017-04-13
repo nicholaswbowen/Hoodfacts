@@ -1,10 +1,17 @@
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" ng-click="vm.closeNav()">&times;</a>
-  <button class="btn btn-primary">thing1</button>
-  <button class="btn btn-primary">thing2</button>
-  <button class="btn btn-primary">cattinhat</button>
-  <button class="btn btn-primary">beatuppeople4fun</button>
-  <a><button class="btn btn-primary" ui-sref="home">Home</button></a>
+  <a>thing1</a>
+  <a>thing2</a>
+  <a>cattinhat</a>
+  <a>beatuppeople4fun</a>
+  <a ui-sref="home">Home</a>
+
+  <a ui-sref="home">Home</a>
+    <a ui-sref="auth" ng-if="vm.currentUser && !vm.isAuthenticated">Login/Register</a>
+    <a ng-if="vm.currentUser && vm.isAuthenticated" ng-click="vm.logout()">Logout</a>
+    <a ui-sref="profile({username: vm.currentUser.username})" ng-if="vm.isAuthenticated">Profile</a>
+    <a ui-sref="usersIndex" ng-if="vm.isAuthenticated && vm.isAuthorized('admin')">Users Index</a>
+
 </div>
 
 <!-- Use any element to open the sidenav -->
