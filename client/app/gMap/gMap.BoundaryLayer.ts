@@ -67,6 +67,7 @@ class boundaryLayer{
     if (!parsedCity.geometry){
       return;
     }
+    // why am I projecting cities out side the viewbox?
     if (this.checkBounds(parsedCity.bounds)){
       let projectedCity = this.ProjectBorder(parsedCity);
       this.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
