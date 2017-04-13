@@ -2,10 +2,9 @@ import * as angular from 'angular';
 import coreConstants from './core.constants';
 import coreFilters from './core.filters';
 import authInterceptor from './interceptor.factory';
-import * as ngMap from 'ngMap';
 import {ProfileService} from '../services/profile.service';
 
-import 'ngstorage';
+import 'ngStorage';
 import 'angular-resource';
 import 'angular-messages';
 import {UserServiceModule} from '../services/user.service';
@@ -26,7 +25,6 @@ export default angular.module('app.core', [
   coreFilters,
   authInterceptor,
   UserServiceModule,
-  ngMap,
   ProfileService
 ])
 .name;

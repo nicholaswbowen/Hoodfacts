@@ -14,7 +14,6 @@ import * as path from 'path';
 import routes from './routes';
 import {User} from './models/User';
 import {cookieList} from './lib/dev';
-
 // routes
 import * as user from './api/user';
 import * as auth from './api/auth';
