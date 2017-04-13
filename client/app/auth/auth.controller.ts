@@ -4,6 +4,7 @@ export class AuthController {
   public user;
   public newUser;
   public $close;
+  public userPattern;
   constructor(
     private UserService: UserServiceClass,
     private AUTHENTICATION_STATUS,
@@ -13,7 +14,9 @@ export class AuthController {
     private $localStorage,
     private SessionService,
     private $uibModalStack,
+    private PATTERN
   ) {
+    this.userPattern = PATTERN.user;
 
   }
 
@@ -73,7 +76,8 @@ AuthController.$inject = [
   '$sessionStorage',
   '$localStorage',
   'SessionService',
-  '$uibModalStack'
+  '$uibModalStack',
+  'PATTERN'
 ];
 
 export default AuthController;
