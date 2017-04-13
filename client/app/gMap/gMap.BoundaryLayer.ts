@@ -38,21 +38,38 @@ class boundaryLayer{
       url = `/api/boundary/?searchBy=bounds&exclude=false${boundsQuery}`
     }
     oboe({url})
-      .on('node','{name}',(d) => {
-      if (!sessionStorage.getItem(d.name)){
-        this.drawBorder(JSON.stringify(d));
+      .on('node','{name}',(city) => {
+      if (!sessionStorage.getItem(city.name)){
+        this.drawBorder(JSON.stringify(city));
       }
-      sessionStorage.setItem(d.name,JSON.stringify(d));
+      sessionStorage.setItem(city.name,JSON.stringify(city));
       return oboe.drop;
       })
     for (let i = 0; i < sessionStorage.length; i++){
-      let fetchBorder = new Promise((resolve,reject) => {
+      new Promise((resolve,reject) => {
         resolve(sessionStorage.getItem(sessionStorage.key(i)));
       })
       .then((result) => {
         this.drawBorder(result);
       })
     }
+    // if (sessionStorage.length > 200){
+    //   let keep = [];
+    //   for (let i = 0; i < sessionStorage.length; i++){
+    //     new Promise((resolve,reject) => {
+    //       resolve(JSON.parse(sessionStorage.getItem(sessionStorage.key(i))));
+    //     })
+    //     .then((result:any) => {
+    //       if (this.checkBounds(result.bounds)){
+    //         keep.push(result);
+    //       }
+    //       sessionStorage.clear();
+    //       keep.forEach((city) => {
+    //         sessionStorage.setItem(city.name,JSON.stringify(city));
+    //       })
+    //     })
+    //   }
+    // }
   }
   public checkBounds(bounds){
     let checkyMin = (bounds.yMin >= this.viewBounds.yMin && bounds.yMin <= this.viewBounds.yMax);

@@ -9,7 +9,9 @@ class gMapController{
   public $onInit;
   public lastBounds;
   public currentBounds;
+  public mapsize;
   constructor(){
+    this.mapsize = {height: document.getElementById('map').clientHeight, width: document.getElementById('map').clientWidth}
     this.$onInit = () => {
       this.bootStrapMap();
     }
@@ -30,7 +32,12 @@ class gMapController{
           self.boundaryOverlay.draw();
         },0)
       })
-
+      google.maps.event.addListener(self.map,'bounds_changed', () => {
+        window.setTimeout(()=>{
+          google.maps.event.trigger(self.map, 'resize');
+          self.boundaryOverlay.draw();
+        },0)
+      })
        boundaryOverlay.prototype = new google.maps.OverlayView();
        function boundaryOverlay(map){
          this.canvas_ = null;
@@ -47,14 +54,16 @@ class gMapController{
        };
        boundaryOverlay.prototype.draw = function() {
          let panes = this.getPanes();
-         let mapsize = {height: window.innerHeight, width: window.innerWidth}
          let projection = this.getProjection();
          let centerPoint = projection.fromLatLngToDivPixel(this.map.getCenter());
          var bounds = self.map.getBounds();
-         this.canvas_.style.left = (centerPoint.x - mapsize.width  / 2) + "px";
-         this.canvas_.style.top  = (centerPoint.y - mapsize.height / 2) + "px";
-         this.canvas_.setAttribute('width', mapsize.width);
-         this.canvas_.setAttribute('height', mapsize.height);
+         self.mapsize =
+         {height: document.getElementById('map').offsetHeight,
+          width: (document.getElementById('map').offsetWidth)}
+         this.canvas_.style.left = (centerPoint.x - self.mapsize.width  / 2) + "px";
+         this.canvas_.style.top  = (centerPoint.y - self.mapsize.height / 2) + "px";
+         this.canvas_.setAttribute('width', self.mapsize.width);
+         this.canvas_.setAttribute('height', self.mapsize.height);
          if (panes.overlayLayer.firstChild){
            panes.overlayLayer.removeChild(panes.overlayLayer.firstChild);
          }
