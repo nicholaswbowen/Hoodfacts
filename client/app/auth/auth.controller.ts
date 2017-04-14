@@ -3,6 +3,8 @@ import {UserServiceClass} from '../services/user.service';
 export class AuthController {
   public user;
   public newUser;
+  public $close;
+  public userPattern;
   constructor(
     private UserService: UserServiceClass,
     private AUTHENTICATION_STATUS,
@@ -10,26 +12,44 @@ export class AuthController {
     private toastr,
     private $sessionStorage,
     private $localStorage,
-    private SessionService
+    private SessionService,
+    private $uibModalStack,
+    private PATTERN
   ) {
+    this.userPattern = PATTERN.user;
 
   }
-  public register () {
-    this.UserService.register(this.newUser)
-      .then((response) => {
-        this.toastr.success(`Please sign in ${this.newUser.username}`, `Fantastic.`);
 
-      })
-      .catch((e) => {
-        this.toastr.warning(`${e.message}`, `Nope.`);
-      });
+  public closeModal() {
+    this.$uibModalStack.dismissAll(true);
+  }
+
+  public register () {
+    if (this.newUser.password === this.newUser.confirmPassword) {
+      this.UserService.register(this.newUser)
+        .then((response) => {
+          this.newUser = {};
+          this.toastr.success(`Please sign in ${this.newUser.username}`, `Fantastic.`);
+        })
+        .catch((e) => {
+          this.toastr.warning(`${e.message}`, `Nope, you're already registered son. Go login.`);
+        });
+    } else {
+      this.toastr.error('Submission Failed', 'Your password fields must match.');
+    }
   }
   public login() {
     this.UserService.login(this.user)
       .then((response) => {
-        this.$sessionStorage.user = response.user;
-        this.toastr.success(`Welcome, ${this.user.username}`, this.AUTHENTICATION_STATUS.success);
-        this.$state.go('profile', {username: this.user.username}, {reload: true, notify: true});
+
+        this.UserService.getCurrentUser()
+          .then ((user)=>{
+            this.closeModal();
+            this.$sessionStorage.user = user;
+            this.toastr.success(`Welcome, ${user.username}`, this.AUTHENTICATION_STATUS.success);
+            this.$state.go('profile', {username: user.username}, {reload: true, notify: true});
+        })
+
       }).catch((e) => {
         this.toastr.error('Authentication failed.', 'Error:401');
       });
@@ -48,6 +68,16 @@ export class AuthController {
       });
   }
 }
-AuthController.$inject = ['UserService', 'AUTHENTICATION_STATUS', '$state', 'toastr', '$sessionStorage'];
+AuthController.$inject = [
+  'UserService',
+  'AUTHENTICATION_STATUS',
+  '$state',
+  'toastr',
+  '$sessionStorage',
+  '$localStorage',
+  'SessionService',
+  '$uibModalStack',
+  'PATTERN'
+];
 
 export default AuthController;

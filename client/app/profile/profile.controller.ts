@@ -3,11 +3,11 @@ class ProfileController {
   public currentUser;
   public profileID;
   public profile;
-  public alerts = [];
-
+  public date = new Date();
   constructor(
     private ProfileService: ProfileServiceClass,
     private $state: ng.ui.IStateService,
+    private toastr,
     SessionService,
     $stateParams
   ) {
@@ -24,7 +24,7 @@ class ProfileController {
     this.ProfileService.getProfile(this.profileID).then((res) => {
         this.profile = res;
       }).catch((err) => {
-        this.alerts.push({type: 'warning', message: 'Oh no! We can not find your profile! Please login again'});
+        this.toastr.error('Profile loading failed.', 'Error:401');
       });
   }
 };
@@ -32,6 +32,7 @@ class ProfileController {
 ProfileController.$inject = [
   'ProfileService',
   '$state',
+  'toastr',
   'SessionService',
   '$stateParams'
 ];

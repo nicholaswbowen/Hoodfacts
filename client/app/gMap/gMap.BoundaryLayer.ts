@@ -1,64 +1,103 @@
-
+import * as oboe from 'oboe';
 declare var canvas;
 declare var google;
 class boundaryLayer{
-  public test = 0;
   public overlayProjection;
-  public boundaryOverlay;
   public canvas;
   public ctx;
-  public $http;
-  public cities = [];
-  constructor(overlayProjection,canvas,$http){
+  public lastViewBounds:any = {};
+  public viewBounds:any = {};
+  constructor(overlayProjection,canvas,viewBounds,lastViewBounds){
     let self = this;
+    this.lastViewBounds = lastViewBounds;
+    this.viewBounds = viewBounds;
     this.overlayProjection = overlayProjection;
     this.canvas = canvas;
     this.ctx = this.canvas.getContext('2d');
-    this.$http = $http;
-    this.getBoundaries()
-      .then((result) => {
-        let keys = Object.keys(result.data);
-        keys.forEach((key) => {
-          this.cities.push(JSON.parse(result.data[key]));
-        })
-        this.drawOverlay();
-      })
-
-  }
-  public drawOverlay(){
-    this.cities.forEach((city) => this.drawBorder(city))
+    this.getBoundaries();
+    return this.viewBounds;
   }
   public ProjectBorder(city){
-    let projectedBorder = [];
+    let projectedBorders = [];
     city.geometry.coordinates.forEach((polygon) => {
-      projectedBorder.push(
+      projectedBorders.push(
         polygon[0].map((point) => {
-          let coords = new google.maps.LatLng(point[1], point[0])
+          let coords = new google.maps.LatLng(point[1], point[0]);
           return this.overlayProjection.fromLatLngToContainerPixel(coords);
       }));
     });
-    return projectedBorder;
+    return projectedBorders;
   }
   public getBoundaries(){
-    //check localstorage for boundaries already fetched
-    //create a query to fetch mising boundaries based on current map position
-    //return the query promise.
-    //maybe cram oboe in here. I do what I want ¯\_(ツ)_/¯
-    return this.$http.get('/api/boundary');
+    let boundsQuery = `&xMax=${this.viewBounds.xMax}&yMax=${this.viewBounds.yMax}&xMin=${this.viewBounds.xMin}&yMin=${this.viewBounds.yMin}`
+    let url;
+    if (this.lastViewBounds){
+      let excludeQuery = `&exMax=${this.lastViewBounds.xMax}&eyMax=${this.lastViewBounds.yMax}&exMin=${this.lastViewBounds.xMin}&eyMin=${this.lastViewBounds.yMin}`
+      url = `/api/boundary/?searchBy=bounds&exclude=true${boundsQuery}${excludeQuery}`
+    }else{
+      url = `/api/boundary/?searchBy=bounds&exclude=false${boundsQuery}`
+    }
+    oboe({url})
+      .on('node','{name}',(city) => {
+      if (!sessionStorage.getItem(city.name)){
+        this.drawBorder(JSON.stringify(city));
+      }
+      sessionStorage.setItem(city.name,JSON.stringify(city));
+      return oboe.drop;
+      })
+    for (let i = 0; i < sessionStorage.length; i++){
+      new Promise((resolve,reject) => {
+        resolve(sessionStorage.getItem(sessionStorage.key(i)));
+      })
+      .then((result) => {
+        this.drawBorder(result);
+      })
+    }
+    // if (sessionStorage.length > 200){
+    //   let keep = [];
+    //   for (let i = 0; i < sessionStorage.length; i++){
+    //     new Promise((resolve,reject) => {
+    //       resolve(JSON.parse(sessionStorage.getItem(sessionStorage.key(i))));
+    //     })
+    //     .then((result:any) => {
+    //       if (this.checkBounds(result.bounds)){
+    //         keep.push(result);
+    //       }
+    //       sessionStorage.clear();
+    //       keep.forEach((city) => {
+    //         sessionStorage.setItem(city.name,JSON.stringify(city));
+    //       })
+    //     })
+    //   }
+    // }
+  }
+  public checkBounds(bounds){
+    let checkyMin = (bounds.yMin >= this.viewBounds.yMin && bounds.yMin <= this.viewBounds.yMax);
+    let checkxMin = (bounds.xMin >= this.viewBounds.xMin && bounds.xMin <= this.viewBounds.xMax);
+    let checkyMax = (bounds.yMax >= this.viewBounds.yMin && bounds.yMax <= this.viewBounds.yMax);
+    let checkxMax = (bounds.xMax >= this.viewBounds.xMin && bounds.xMax <= this.viewBounds.xMax);
+    return (checkyMin && checkxMin || checkyMax && checkxMax);
+
   }
   public drawBorder(city){
-    let projectedCity = this.ProjectBorder(city);
-    this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-    this.ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    this.ctx.beginPath()
-    projectedCity.forEach((polygon) => {
-      this.ctx.moveTo(polygon[0].x,polygon[0].y);
-      polygon.forEach((point)=> {
-        this.ctx.lineTo(point.x,point.y)
+    let parsedCity = JSON.parse(city);
+    if (!parsedCity.geometry){
+      return;
+    }
+    // why am I projecting cities out side the viewbox?
+    if (this.checkBounds(parsedCity.bounds)){
+      let projectedCity = this.ProjectBorder(parsedCity);
+      this.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
+      this.ctx.beginPath();
+      projectedCity.forEach((polygon) => {
+        this.ctx.moveTo(polygon[0].x,polygon[0].y);
+        polygon.forEach((point)=> {
+          this.ctx.lineTo(point.x,point.y);
+        })
       })
-    })
-    this.ctx.filter = 'blur(10px)';
-    this.ctx.fill();
+      this.ctx.fill();
+    }
   }
+
 }
 export default boundaryLayer;
