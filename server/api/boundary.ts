@@ -1,4 +1,6 @@
 import * as express from 'express';
+import {placesData} from '../lib/googlePlaces';
+import {twitterData} from '../lib/twitterData';
 import {CityBoundaries} from '../models/CityBoundary';
 let router = express.Router();
 
@@ -22,7 +24,9 @@ router.get('/boundary', function(req, res, next) {
       'bounds.yMax': {$gte:req.query.yMin, $lte:req.query.yMax}}],
    }
 }
-
+  //lat: 47.673988, lng:-122.121513
+  console.log(`center = ${req.query.center}`)
+  let data = new placesData('taco',req.query.center,10000);
   let borders = CityBoundaries.find(query).cursor();
   if (req.query.exclude === "true"){
     borders.on('data', (d) => {
@@ -31,6 +35,7 @@ router.get('/boundary', function(req, res, next) {
         return;
       }else{
         //send this
+        // console.log(data.checkCityData(d.bounds));
         return res.write(JSON.stringify(d));
       }
     })

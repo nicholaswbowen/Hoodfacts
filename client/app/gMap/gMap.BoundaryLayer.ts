@@ -7,70 +7,103 @@ class boundaryLayer{
   public ctx;
   public lastViewBounds:any = {};
   public viewBounds:any = {};
-  constructor(overlayProjection,canvas,viewBounds,lastViewBounds){
-    let self = this;
+  private centerPoint;
+  private cityCoords;
+  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint){
+    this.cityCoords = new Map();
+    this.drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint);
+  }
+  private colorPicker(city){
+    return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.4)`;
+  }
+  public drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint){
     this.lastViewBounds = lastViewBounds;
     this.viewBounds = viewBounds;
     this.overlayProjection = overlayProjection;
     this.canvas = canvas;
     this.ctx = this.canvas.getContext('2d');
+    this.centerPoint = centerPoint;
     this.getBoundaries();
-    return this.viewBounds;
   }
-  public ProjectBorder(city){
-    let projectedBorders = [];
-    city.geometry.coordinates.forEach((polygon) => {
-      projectedBorders.push(
-        polygon[0].map((point) => {
-          let coords = new google.maps.LatLng(point[1], point[0]);
-          return this.overlayProjection.fromLatLngToContainerPixel(coords);
-      }));
-    });
-    return projectedBorders;
+
+  public projectBorder(city){
+    return new Promise((resolve,reject) => {
+        let projectedBorders = [];
+        let pathObjects = []
+        city.geometry.coordinates.forEach((polygon) => {
+          projectedBorders.push(
+            polygon[0].map((point) => {
+              let coords = new google.maps.LatLng(point[1], point[0]);
+              return this.overlayProjection.fromLatLngToContainerPixel(coords);
+          }));
+        });
+        projectedBorders.forEach((polygon) => {
+          let pathObject = new Path2D();
+          pathObject.moveTo(polygon[0].x,polygon[0].y);
+          polygon.forEach((point)=> {
+            pathObject.lineTo(point.x,point.y);
+          })
+          pathObject.closePath();
+          pathObjects.push(pathObject);
+        })
+        resolve(pathObjects);
+    })
+
   }
   public getBoundaries(){
     let boundsQuery = `&xMax=${this.viewBounds.xMax}&yMax=${this.viewBounds.yMax}&xMin=${this.viewBounds.xMin}&yMin=${this.viewBounds.yMin}`
     let url;
+    let resolveStreams:any = () => {
+      return () => {
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+        this.cityCoords.forEach((city) => {
+          this.drawBorder(city,this.colorPicker(city));
+        })
+      }
+    }
+    let resolveHeatMap:any = () => {
+      resolveStreams = resolveStreams();
+    }
     if (this.lastViewBounds){
       let excludeQuery = `&exMax=${this.lastViewBounds.xMax}&eyMax=${this.lastViewBounds.yMax}&exMin=${this.lastViewBounds.xMin}&eyMin=${this.lastViewBounds.yMin}`
-      url = `/api/boundary/?searchBy=bounds&exclude=true${boundsQuery}${excludeQuery}`
+      url = `/api/boundary/?searchBy=bounds&exclude=true${boundsQuery}${excludeQuery}&center=${this.centerPoint}`
     }else{
-      url = `/api/boundary/?searchBy=bounds&exclude=false${boundsQuery}`
+      url = `/api/boundary/?searchBy=bounds&exclude=false${boundsQuery}&center=${this.centerPoint}`
     }
+    // when we Should not be fetching:
+    // 1. When zooming in, we already have the data
+    // 2. When moving within already fetched space. AKA, the "viewBox" is within the "fetchBox"
+    // when we have to fetch:
+    // 1. When we change the data set
+    // 2. When we exceed the "fetchBox"
+
     oboe({url})
       .on('node','{name}',(city) => {
-      if (!sessionStorage.getItem(city.name)){
-        this.drawBorder(JSON.stringify(city));
+        this.cityCoords.set(city.name,city);
+        this.projectBorder(city)
+          .then((result) => {
+            city.canvasPaths = result;
+            this.cityCoords.set(city.name,city);
+            this.drawBorder(city,`rgba(153, 255, 153, 0.4)`);
+          })
+        return oboe.drop;
+      })
+      .on('end', () => {
+        resolveHeatMap();
+      })
+
+      if(this.cityCoords){
+        this.cityCoords.forEach((city) => {
+          this.projectBorder(city)
+            .then((result) => {
+              city.canvasPaths = result;
+              this.cityCoords.set(city.name,city);
+              this.drawBorder(city,`rgba(153, 255, 153, 0.4)`);
+            })
+        })
+        resolveHeatMap();
       }
-      sessionStorage.setItem(city.name,JSON.stringify(city));
-      return oboe.drop;
-      })
-    for (let i = 0; i < sessionStorage.length; i++){
-      new Promise((resolve,reject) => {
-        resolve(sessionStorage.getItem(sessionStorage.key(i)));
-      })
-      .then((result) => {
-        this.drawBorder(result);
-      })
     }
-    // if (sessionStorage.length > 200){
-    //   let keep = [];
-    //   for (let i = 0; i < sessionStorage.length; i++){
-    //     new Promise((resolve,reject) => {
-    //       resolve(JSON.parse(sessionStorage.getItem(sessionStorage.key(i))));
-    //     })
-    //     .then((result:any) => {
-    //       if (this.checkBounds(result.bounds)){
-    //         keep.push(result);
-    //       }
-    //       sessionStorage.clear();
-    //       keep.forEach((city) => {
-    //         sessionStorage.setItem(city.name,JSON.stringify(city));
-    //       })
-    //     })
-    //   }
-    // }
-  }
   public checkBounds(bounds){
     let checkyMin = (bounds.yMin >= this.viewBounds.yMin && bounds.yMin <= this.viewBounds.yMax);
     let checkxMin = (bounds.xMin >= this.viewBounds.xMin && bounds.xMin <= this.viewBounds.xMax);
@@ -79,23 +112,12 @@ class boundaryLayer{
     return (checkyMin && checkxMin || checkyMax && checkxMax);
 
   }
-  public drawBorder(city){
-    let parsedCity = JSON.parse(city);
-    if (!parsedCity.geometry){
-      return;
-    }
-    // why am I projecting cities out side the viewbox?
-    if (this.checkBounds(parsedCity.bounds)){
-      let projectedCity = this.ProjectBorder(parsedCity);
-      this.ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
-      this.ctx.beginPath();
-      projectedCity.forEach((polygon) => {
-        this.ctx.moveTo(polygon[0].x,polygon[0].y);
-        polygon.forEach((point)=> {
-          this.ctx.lineTo(point.x,point.y);
+  public drawBorder(city, color){
+    if (this.checkBounds(city.bounds)){
+        city.canvasPaths.forEach((polygon) => {
+          this.ctx.fillStyle = color;
+          this.ctx.fill(polygon);
         })
-      })
-      this.ctx.fill();
     }
   }
 

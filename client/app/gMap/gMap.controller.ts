@@ -1,11 +1,12 @@
 declare var google;
 import * as GoogleMapsLoader from 'google-maps';
 import {MAP_TERRAIN_STYLE} from './gMap.terrain.styles';
+import {BLANK_MAP} from './gMap.blank.styles';
 import BoundaryLayer from './gMap.BoundaryLayer';
 class gMapController{
   public map;
   public boundaryOverlay;
-  public count = 0;
+  public canvasLayer;
   public $onInit;
   public lastBounds;
   public currentBounds;
@@ -23,8 +24,11 @@ class gMapController{
     GoogleMapsLoader.load(function(google) {
       self.map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 47.673988, lng:-122.121513},
+        maxZoom: 13,
+        minZoom: 10,
         zoom: 13,
-        streetViewControl: false,
+        disableDefaultUI: true,
+        zoomControl: true,
         styles: MAP_TERRAIN_STYLE
       });
       self.map.addListener('center_changed', () => {
@@ -35,7 +39,6 @@ class gMapController{
       google.maps.event.addListener(self.map,'bounds_changed', () => {
         window.setTimeout(()=>{
           google.maps.event.trigger(self.map, 'resize');
-          self.boundaryOverlay.draw();
         },0)
       })
        boundaryOverlay.prototype = new google.maps.OverlayView();
@@ -69,7 +72,11 @@ class gMapController{
          }
          panes.overlayLayer.appendChild(this.canvas_);
          self.currentBounds = self.setBounds(bounds.getNorthEast(),bounds.getSouthWest())
-         self.lastBounds = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds);
+         if (!self.canvasLayer){
+           self.canvasLayer = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter());
+         }else{
+           self.canvasLayer.drawOverlay(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter());
+         }
          self.lastBounds = self.currentBounds;
        };
        self.boundaryOverlay = new boundaryOverlay(self.map);
