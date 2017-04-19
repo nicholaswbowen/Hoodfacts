@@ -1,6 +1,6 @@
 import {UserServiceClass} from '../services/user.service';
 
-export class AuthController {
+export class splashPageController {
   public user;
   public newUser;
   public $close;
@@ -70,7 +70,7 @@ export class AuthController {
       });
   }
 }
-AuthController.$inject = [
+splashPageController.$inject = [
   'UserService',
   'AUTHENTICATION_STATUS',
   '$state',
@@ -82,4 +82,4 @@ AuthController.$inject = [
   'PATTERN'
 ];
 
-export default AuthController;
+export default splashPageController;

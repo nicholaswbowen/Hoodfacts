@@ -1,0 +1,8 @@
+
+<ul class="nav nav-pills">
+  <li><button class="btn btn-primary" ui-sref="home">Home</button></li>
+  <li><button class="btn btn-success" ng-click="vm.openAuth()" ng-if="vm.currentUser && !vm.isAuthenticated">Login/Register</button></li>
+  <li><button class="btn btn-warning" ng-if="vm.currentUser && vm.isAuthenticated" ng-click="vm.logout()">Logout</button></li>
+  <li><button class="btn btn-success" ng-click="vm.openProfile()" ng-if="vm.isAuthenticated">Profile</button></li>
+  <li><button class="btn btn-danger" ui-sref="usersIndex" ng-if="vm.isAuthenticated && vm.isAuthorized('admin')">Users Index</button></li>
+</ul>

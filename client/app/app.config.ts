@@ -16,7 +16,7 @@ const Config = [
     .state('main', {
       url: '',
       abstract: true,
-      template: '<layout></layout>',
+      template: '<splashPage></splashPage>',
       resolve: {
         currentSession: ['UserService', '$sessionStorage', '$timeout',
           (UserService, $sessionStorage, $timeout) => {
