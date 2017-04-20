@@ -70,7 +70,7 @@ const Config = [
     rewriteLinks: false
   });
 
-  $urlRouterProvider.otherwise('/home');
+  $urlRouterProvider.otherwise('/');
 }];
 
 export default Config;

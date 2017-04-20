@@ -1,85 +1,28 @@
-import {UserServiceClass} from '../services/user.service';
+import * as angular from 'angular';
 
-export class splashPageController {
+class SplashPageController implements ng.IController {
   public user;
-  public newUser;
-  public $close;
-  public userPattern;
-  public userName;
+  public $onInit;
   constructor(
-    private UserService: UserServiceClass,
-    private AUTHENTICATION_STATUS,
+    private SessionService,
+    private UserService,
     private $state: ng.ui.IStateService,
     private toastr,
-    private $sessionStorage,
-    private $localStorage,
-    private SessionService,
-    private $uibModalStack,
-    private PATTERN
+    private $localStorage
   ) {
-    this.userPattern = PATTERN.user;
-
-  }
-
-  public closeModal() {
-    this.$uibModalStack.dismissAll(true);
-  }
-
-  public register () {
-    if (this.newUser.password === this.newUser.confirmPassword) {
-      this.UserService.register(this.newUser)
-        .then((response) => {
-          this.newUser = {};
-          this.toastr.success(`Please sign in ${this.newUser.username}`, `Fantastic.`)
-          // this.goToTheOtherTab.now()
-        })
-        .catch((e) => {
-          this.toastr.warning(`${e.message}`, `Nope, you're already registered son. Go login.`);
-        });
-    } else {
-      this.toastr.error('Submission Failed', 'Your password fields must match.');
-    }
-  }
-  public login() {
-    this.UserService.login(this.user)
-      .then((response) => {
-
-        this.UserService.getCurrentUser()
-          .then ((user)=>{
-            this.closeModal();
-            this.$sessionStorage.user = user;
-            this.toastr.success(`Welcome, ${user.username}`, this.AUTHENTICATION_STATUS.success);
-            this.$state.go('profile', {username: user.username}, {reload: true, notify: true});
-        })
-
-      }).catch((e) => {
-        this.toastr.error('Authentication failed.', 'Error:401');
-      });
-  }
-
-  public logout() {
-    this.UserService.logout()
-      .then((response) => {
-        delete this.$localStorage.token;
-        this.SessionService.destroy();
-        this.toastr.info(`${this.user.username} has logged out.`, 'Goodbye');
-        this.$state.go('home');
-      })
-      .catch((e) => {
-        this.toastr.error('Unable to logout.', 'Error');
-      });
+    console.log ('You are on the Splash Page')
+    this.$onInit = function() {
+      this.user = SessionService.getUser();
+    };
   }
 }
-splashPageController.$inject = [
+
+SplashPageController.$inject = [
+  'SessionService',
   'UserService',
-  'AUTHENTICATION_STATUS',
   '$state',
   'toastr',
-  '$sessionStorage',
-  '$localStorage',
-  'SessionService',
-  '$uibModalStack',
-  'PATTERN'
+  '$localStorage'
 ];
 
-export default splashPageController;
+export default SplashPageController;
