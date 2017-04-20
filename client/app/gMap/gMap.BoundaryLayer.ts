@@ -1,20 +1,29 @@
 import * as oboe from 'oboe';
 declare var canvas;
 declare var google;
-class boundaryLayer{
-  public overlayProjection;
-  public canvas;
-  public ctx;
-  public lastViewBounds:any = {};
-  public viewBounds:any = {};
+export class BoundaryLayer{
+  private overlayProjection;
+  private canvas;
+  private ctx;
   private centerPoint;
   private cityCoords;
-  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint){
+  public boundaryType:string;
+  public lastViewBounds:any;
+  public viewBounds:any;
+  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,boundaryType){
     this.cityCoords = new Map();
+    this.boundaryType = boundaryType;
     this.drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint);
   }
-  private colorPicker(city){
-    return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.4)`;
+  private colorPicker(city,min,max){
+    let random = () => Math.floor(Math.random() * 255);
+    return `rgba(${random()}, ${random()}, ${random()}, 0.4)`
+    // if (city.data === 'no data'){
+    //   return `rgba(0, 0, 0, 0.2)`;
+    // }else{
+    //   return `rgba(${255 - 50*city.data}, 255, 0, 0.4)`;
+    // }
+
   }
   public drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint){
     this.lastViewBounds = lastViewBounds;
@@ -50,35 +59,31 @@ class boundaryLayer{
     })
 
   }
-  public getBoundaries(){
+  public createQuery() {
     let boundsQuery = `&xMax=${this.viewBounds.xMax}&yMax=${this.viewBounds.yMax}&xMin=${this.viewBounds.xMin}&yMin=${this.viewBounds.yMin}`
     let url;
+    if (this.lastViewBounds){
+      let excludeQuery = `&exMax=${this.lastViewBounds.xMax}&eyMax=${this.lastViewBounds.yMax}&exMin=${this.lastViewBounds.xMin}&eyMin=${this.lastViewBounds.yMin}`
+      return `/api/boundary/?searchBy=${this.boundaryType}&exclude=true${boundsQuery}${excludeQuery}`
+    }else{
+      return `/api/boundary/?searchBy=${this.boundaryType}&exclude=false${boundsQuery}`
+    }
+  }
+  public getBoundaries(){
+    let url = this.createQuery() ;
     let resolveStreams:any = () => {
       return () => {
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
         this.cityCoords.forEach((city) => {
-          this.drawBorder(city,this.colorPicker(city));
+          this.drawBorder(city,this.colorPicker(city,0,5));
         })
       }
     }
     let resolveHeatMap:any = () => {
       resolveStreams = resolveStreams();
     }
-    if (this.lastViewBounds){
-      let excludeQuery = `&exMax=${this.lastViewBounds.xMax}&eyMax=${this.lastViewBounds.yMax}&exMin=${this.lastViewBounds.xMin}&eyMin=${this.lastViewBounds.yMin}`
-      url = `/api/boundary/?searchBy=bounds&exclude=true${boundsQuery}${excludeQuery}&center=${this.centerPoint}`
-    }else{
-      url = `/api/boundary/?searchBy=bounds&exclude=false${boundsQuery}&center=${this.centerPoint}`
-    }
-    // when we Should not be fetching:
-    // 1. When zooming in, we already have the data
-    // 2. When moving within already fetched space. AKA, the "viewBox" is within the "fetchBox"
-    // when we have to fetch:
-    // 1. When we change the data set
-    // 2. When we exceed the "fetchBox"
-
     oboe({url})
-      .on('node','{name}',(city) => {
+      .node('{bounds}',(city) => {
         this.cityCoords.set(city.name,city);
         this.projectBorder(city)
           .then((result) => {
@@ -87,6 +92,10 @@ class boundaryLayer{
             this.drawBorder(city,`rgba(153, 255, 153, 0.4)`);
           })
         return oboe.drop;
+      })
+      .node('{data}', (cityData) => {
+        let city = this.cityCoords.get(cityData.name);
+        this.cityCoords.set(city.name, Object.assign(city,cityData));
       })
       .on('end', () => {
         resolveHeatMap();
@@ -120,6 +129,4 @@ class boundaryLayer{
         })
     }
   }
-
 }
-export default boundaryLayer;

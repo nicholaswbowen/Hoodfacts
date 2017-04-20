@@ -2,7 +2,7 @@ declare var google;
 import * as GoogleMapsLoader from 'google-maps';
 import {MAP_TERRAIN_STYLE} from './gMap.terrain.styles';
 import {BLANK_MAP} from './gMap.blank.styles';
-import BoundaryLayer from './gMap.BoundaryLayer';
+import {BoundaryLayer} from './gMap.BoundaryLayer';
 class gMapController{
   public map;
   public boundaryOverlay;
@@ -11,6 +11,7 @@ class gMapController{
   public lastBounds;
   public currentBounds;
   public mapsize;
+  public currentBoundaryType:string;
   constructor(){
     this.mapsize = {height: document.getElementById('map').clientHeight, width: document.getElementById('map').clientWidth}
     this.$onInit = () => {
@@ -25,7 +26,7 @@ class gMapController{
       self.map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 47.673988, lng:-122.121513},
         maxZoom: 13,
-        minZoom: 10,
+        minZoom: 3,
         zoom: 13,
         disableDefaultUI: true,
         zoomControl: true,
@@ -48,6 +49,7 @@ class gMapController{
        }
        boundaryOverlay.prototype.onAdd = function(){
          let canvas = document.createElement('canvas');
+         self.currentBoundaryType = self.chooseBoundaryType();
          canvas.setAttribute('id','boundaryOverlay');
          this.canvas_ = canvas;
        }
@@ -67,24 +69,51 @@ class gMapController{
          this.canvas_.style.top  = (centerPoint.y - self.mapsize.height / 2) + "px";
          this.canvas_.setAttribute('width', self.mapsize.width);
          this.canvas_.setAttribute('height', self.mapsize.height);
+
+
          if (panes.overlayLayer.firstChild){
            panes.overlayLayer.removeChild(panes.overlayLayer.firstChild);
          }
          panes.overlayLayer.appendChild(this.canvas_);
-         self.currentBounds = self.setBounds(bounds.getNorthEast(),bounds.getSouthWest())
+
+
+         let newBoundaryType = self.chooseBoundaryType();
+         console.log(self.currentBoundaryType);
+         console.log(newBoundaryType);
+         if (self.currentBoundaryType !== newBoundaryType){
+           console.log('switched')
+           self.canvasLayer = undefined;
+           self.lastBounds = undefined;
+         }
+         let offset;
+         if (self.currentBoundaryType == 'cities'){
+           offset = .1
+         }else if (self.currentBoundaryType == 'states'){
+           offset = 5;
+         }
+         self.currentBounds = self.setBounds(bounds.getNorthEast(),bounds.getSouthWest(),offset)
          if (!self.canvasLayer){
-           self.canvasLayer = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter());
+           self.canvasLayer = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),newBoundaryType);
          }else{
            self.canvasLayer.drawOverlay(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter());
          }
          self.lastBounds = self.currentBounds;
+         self.currentBoundaryType = newBoundaryType;
        };
+
        self.boundaryOverlay = new boundaryOverlay(self.map);
+
      });
   }
-  public setBounds(ne,sw){
+  public chooseBoundaryType(){
+    if (this.map.zoom <= 8){
+      return "states";
+    }else{
+      return "cities";
+    }
+ }
+  public setBounds(ne,sw,OFFSET){
     let viewBounds:any = {};
-    const OFFSET = 0.1;
     viewBounds.xMax = ne.lat()+OFFSET;
     viewBounds.yMax = ne.lng()+OFFSET;
     viewBounds.xMin = sw.lat()-OFFSET;
