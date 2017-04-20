@@ -67,9 +67,8 @@ passport.use(new TwitterStrategy({
 ));
 
 passport.use(new LocalStrategy({session: true}, function(username: string, password: string, done) {
-    let lc = username.toLowerCase();
-    console.log(lc);
-    User.findOne({ username }).select('+passwordHash +salt')
+    let lc = username.includes('@') ? {email: username} : {username};
+    User.findOne(lc).select('+passwordHash +salt')
         .exec(function(err, user) {
           if (err) return done(err);
           if (!user) return done(null, false, { message: 'Incorrect username.' });
