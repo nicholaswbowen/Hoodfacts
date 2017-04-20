@@ -31,6 +31,7 @@ const Config = [
         ]
       }
     })
+
     .state('reload', {
       url: '/reload',
       template: 'Reloading... <i class="fa fa-spinner infinite rotateIn"></i>',
