@@ -2,8 +2,8 @@ const route = function route($stateProvider) {
   $stateProvider
     .state('splashPage', {
       parent: 'main',
-      url: '/',
-      template: '<splashPage></splashPage>',
+      url: '/splashPage',
+      template: '<splash-page></splash-page>',
       resolve: {
         setToken: ['$location', '$localStorage', ($location, $localStorage) => {
           let token = $location.search().token;

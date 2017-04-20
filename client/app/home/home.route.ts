@@ -2,7 +2,7 @@ const route = function route($stateProvider) {
   $stateProvider
     .state('home', {
       parent: 'main',
-      url: '/',
+      url: '/home',
       template: '<home></home>',
       resolve: {
         setToken: ['$location', '$localStorage', ($location, $localStorage) => {

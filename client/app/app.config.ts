@@ -16,7 +16,7 @@ const Config = [
     .state('main', {
       url: '',
       abstract: true,
-      template: '<splashPage></splashPage>',
+      template: '<layout></layout>',
       resolve: {
         currentSession: ['UserService', '$sessionStorage', '$timeout',
           (UserService, $sessionStorage, $timeout) => {
@@ -70,7 +70,7 @@ const Config = [
     rewriteLinks: false
   });
 
-  $urlRouterProvider.otherwise('/');
+  $urlRouterProvider.otherwise('/home');
 }];
 
 export default Config;
