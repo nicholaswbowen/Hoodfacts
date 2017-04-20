@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-let cityBoundary = new mongoose.Schema({
+let stateBoundary = new mongoose.Schema({
     name: String,
     bounds: {
       xMin: Number,
@@ -10,4 +10,4 @@ let cityBoundary = new mongoose.Schema({
     geometry: mongoose.Schema.Types.Mixed
 });
 
-export const CityBoundaries = mongoose.model('CityBoundaries', cityBoundary);
+export const StateBoundaries = mongoose.model('stateboundaries', stateBoundary);
