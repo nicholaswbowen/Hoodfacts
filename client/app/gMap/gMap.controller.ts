@@ -12,7 +12,7 @@ class gMapController{
   public currentBounds;
   public mapsize;
   public currentBoundaryType:string;
-  constructor(){
+  constructor(private $rootScope){
     this.mapsize = {height: document.getElementById('map').clientHeight, width: document.getElementById('map').clientWidth}
     this.$onInit = () => {
       this.bootStrapMap();
@@ -49,7 +49,7 @@ class gMapController{
        }
        boundaryOverlay.prototype.onAdd = function(){
          let canvas = document.createElement('canvas');
-         self.currentBoundaryType = self.chooseBoundaryType();
+         self.currentBoundaryType = self.checkMapZoom();
          canvas.setAttribute('id','boundaryOverlay');
          this.canvas_ = canvas;
        }
@@ -77,7 +77,7 @@ class gMapController{
          panes.overlayLayer.appendChild(this.canvas_);
 
 
-         let newBoundaryType = self.chooseBoundaryType();
+         let newBoundaryType = self.checkMapZoom();
          console.log(self.currentBoundaryType);
          console.log(newBoundaryType);
          if (self.currentBoundaryType !== newBoundaryType){
@@ -105,10 +105,12 @@ class gMapController{
 
      });
   }
-  public chooseBoundaryType(){
+  public checkMapZoom(){
     if (this.map.zoom <= 8){
+      this.$rootScope.mapZoomLevel = "states";
       return "states";
     }else{
+      this.$rootScope.mapZoomLevel = "cities";
       return "cities";
     }
  }
@@ -122,5 +124,5 @@ class gMapController{
   }
 }
 
-gMapController.$inject = [];
+gMapController.$inject = ['$rootScope'];
 export default gMapController;

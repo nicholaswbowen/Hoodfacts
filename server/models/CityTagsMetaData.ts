@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-let cityDataTag = new mongoose.Schema({
+let cityTagsMetaData = new mongoose.Schema({
   name: {type:String,unique:true},
   type: String,
   subtype: String,
@@ -8,4 +8,4 @@ let cityDataTag = new mongoose.Schema({
   owner: String
 });
 
-export const CityDataTag = mongoose.model('city_data_tags', cityDataTag);
+export const CityTagsMetaData = mongoose.model('city_data_tags_meta_data', cityTagsMetaData);
