@@ -20,6 +20,7 @@ export default [
     $localStorage,
     $timeout
   ) {
+    $state.go('splashPage');
     $rootScope.$on('$stateChangeStart', (event, next) => {
       UserService.getCurrentUser().then((user) => {
         $sessionStorage.user = user;

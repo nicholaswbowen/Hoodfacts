@@ -38,7 +38,7 @@
     transition: 0.5s;
 }
 
-.sidenav button {
+.sidenav a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 25px;
@@ -47,7 +47,7 @@
     transition: 0.3s
 }
 
-.sidenav button:hover, .offcanvas button:focus{
+.sidenav a:hover, .offcanvas button:focus{
     color: #f1f1f1;
 }
 

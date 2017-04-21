@@ -12,8 +12,8 @@ import AuthComponent from './auth/auth.module';
 import gMapComponent from './gMap/gMap.module';
 import Profile from './profile/profile.module';
 import UsersIndex from './usersIndex/usersIndex.module';
-import Navigation from './navigation/navigation.module';
 import Sidebar from './sidebar/sidebar.module';
+import SplashPage from './splashPage/splashPage.module';
 
 const name = 'app';
 const dependencies = [
@@ -27,8 +27,8 @@ const dependencies = [
   gMapComponent,
   Profile,
   UsersIndex,
-  Navigation,
-  Sidebar
+  Sidebar,
+  SplashPage
 ];
 
 angular.module(name, dependencies)

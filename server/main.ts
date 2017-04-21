@@ -25,6 +25,8 @@ import * as profile from './api/profile';
 let app = express();
 const isDev = app.get('env') === 'development' ? true : false;
 
+console.log (process.env.JWT_SECRET)
+
 // helmet (read the docs)
 app.use(helmet());
 
