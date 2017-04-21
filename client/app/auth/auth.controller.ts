@@ -5,6 +5,7 @@ export class AuthController {
   public newUser;
   public $close;
   public userPattern;
+  public userName;
   constructor(
     private UserService: UserServiceClass,
     private AUTHENTICATION_STATUS,
@@ -29,7 +30,8 @@ export class AuthController {
       this.UserService.register(this.newUser)
         .then((response) => {
           this.newUser = {};
-          this.toastr.success(`Please sign in ${this.newUser.username}`, `Fantastic.`);
+          this.toastr.success(`Please sign in ${this.newUser.username}`, `Fantastic.`)
+          // this.goToTheOtherTab.now()
         })
         .catch((e) => {
           this.toastr.warning(`${e.message}`, `Nope, you're already registered son. Go login.`);

@@ -20,7 +20,6 @@ passport.deserializeUser(function(obj: IUser, done) {
     done(null, user);
   });
 });
-
 let opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeader(),
   secretOrKey: process.env.JWT_SECRET
