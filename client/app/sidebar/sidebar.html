@@ -1,16 +1,18 @@
 <div id="sidenavContainer">
   <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" ng-click="vm.closeNav()">&times;</a>
-    <a>thing1</a>
-    <a>thing2</a>
-    <a>cattinhat</a>
-    <a>beatuppeople4fun</a>
+
+
+    <!--home-->
     <a ui-sref="home">Home</a>
-    <a ui-sref="home">Home</a>
-      <a ui-sref="auth" ng-if="vm.currentUser && !vm.isAuthenticated">Login/Register</a>
-      <a ng-if="vm.currentUser && vm.isAuthenticated" ng-click="vm.logout()">Logout</a>
-      <a ui-sref="profile({username: vm.currentUser.username})" ng-if="vm.isAuthenticated">Profile</a>
-      <a ui-sref="usersIndex" ng-if="vm.isAuthenticated && vm.isAuthorized('admin')">Users Index</a>
+
+    <!--login/register-->
+    <a ng-click="vm.openAuth()" ng-if="vm.currentUser && !vm.isAuthenticated">Login/Register</a>
+    <a ng-if="vm.currentUser && vm.isAuthenticated" ng-click="vm.logout()">Logout</a>
+    <a ng-click="vm.openProfile()" ng-if="vm.isAuthenticated">Profile</a>
+    <a ui-sref="usersIndex" ng-if="vm.isAuthenticated && vm.isAuthorized('admin')">Users Index</a>
+    <a>tie data here</a>
+    <a>tie data here</a>
   </div>
 </div>
 <!-- Use any element to open the sidenav -->

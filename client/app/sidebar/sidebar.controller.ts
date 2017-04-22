@@ -6,7 +6,9 @@ class SidebarController {
     $stateParams: ng.ui.IStateParamsService,
     private SessionService: SessionServiceClass,
     private UserService,
-    private $sessionStorage) {
+    private $sessionStorage,
+    private $uibModal
+  ) {
         this.isAuth();
     }
     public openNav() {
@@ -21,6 +23,18 @@ class SidebarController {
        document.getElementById("sidenavContainer").setAttribute('class', 'col-xs-0');
        document.getElementById("map").setAttribute('class', 'col-xs-12');
    }
+   public openProfile() {
+     this.$uibModal.open({
+       component: 'profile'
+     });
+   };
+
+   public openAuth() {
+     this.$uibModal.open({
+       component: 'auth',
+       size: 'lg'
+     });
+   };
    public isAuthorized(roles: string) {
      return this.SessionService.isAuthorized(roles);
    }
@@ -53,7 +67,8 @@ class SidebarController {
    '$stateParams',
    'SessionService',
    'UserService',
-   '$sessionStorage'
+   '$sessionStorage',
+   '$uibModal'
  ];
 
 export default SidebarController
