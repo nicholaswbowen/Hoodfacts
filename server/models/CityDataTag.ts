@@ -1,6 +1,6 @@
 let mongoose = require('mongoose');
 let cityDataTag = new mongoose.Schema({
-  name: {type:String,unique:true},
+  locationName: {type:String,unique:true},
   type: String,
   subtype: String,
   data: Number,

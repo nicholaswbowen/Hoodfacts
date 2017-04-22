@@ -27,7 +27,7 @@ class gMapController{
         center: {lat: 47.673988, lng:-122.121513},
         maxZoom: 13,
         minZoom: 3,
-        zoom: 13,
+        zoom: 8,
         disableDefaultUI: true,
         zoomControl: true,
         styles: MAP_TERRAIN_STYLE

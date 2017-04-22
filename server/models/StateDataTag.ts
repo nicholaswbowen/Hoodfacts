@@ -1,7 +1,8 @@
 let mongoose = require('mongoose');
 let stateDataTag = new mongoose.Schema({
-  name: String,
+  locationName: {type:String,unique:true},
   type: String,
+  subtype: String,
   data: Number,
   reference: String,
   owner: String

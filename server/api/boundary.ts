@@ -2,6 +2,7 @@ import * as express from 'express';
 import {placesData} from '../lib/googlePlaces';
 import {CityBoundaries} from '../models/CityBoundary';
 import {StateBoundaries} from '../models/StateBoundary';
+import {StateDataTag} from '../models/StateDataTag';
 let router = express.Router();
 
 function checkBounds(bounds,yMin,xMin,yMax,xMax){
@@ -26,52 +27,64 @@ router.get('/boundary', function(req, res, next) {
     activeModel = CityBoundaries;
  }
  else if (req.query.searchBy === 'states'){
-   console.log(req.query.searchBy);
    activeModel = StateBoundaries;
  }
   let extractQueue = [];
-  // let resolveQueue:any = () => {
-  //   return () => {
-  //     extractQueue.forEach((city) => {
-  //       res.write(`{"name": "${city.name}", "data":"${data.extractCityData(city.bounds)}"}`);
-  //     })
-  //     res.end();
-  //   }
-  // }
-  // let resolveResponseStream = () => {
-  //   resolveQueue = resolveQueue();
-  // }
-  let borders = activeModel.find(query).cursor();
-  // data.makeQuery('food',req.query.center,50000)
-  //   .then(() => resolveResponseStream());
-  if (req.query.exclude === "true"){
-    borders.on('data', (boundary) => {
+  let resolveQueue:any = () => {
 
-      if (checkBounds(boundary.bounds,req.query.eyMin,req.query.exMin,req.query.eyMax,req.query.exMax)){
+  }
+  let resolveResponseStream = () => {
+    resolveQueue = resolveQueue();
+  }
+  let borders = activeModel.find(query).cursor();
+  if (req.query.exclude === "true"){
+    borders.on('data', (place) => {
+      if (checkBounds(place.bounds,req.query.eyMin,req.query.exMin,req.query.eyMax,req.query.exMax)){
         //exclude this
         return;
       }else{
         //send this
-        // extractQueue.push(boundary);
-        return res.write(JSON.stringify(boundary));
+        extractQueue.push(
+          StateDataTag.findOne({'locationName': place.name, 'subtype': "high_school"})
+            .then((result) => {
+              res.write(`{"name":"${place.name}", "data":"${result.data}"}`);
+            })
+            .catch((e) => {
+
+            })
+          );
+        return res.write(JSON.stringify(place));
       }
     })
     .on('end', (d) => {
-      return res.end();
-      // return resolveResponseStream();
+      Promise.all(extractQueue)
+        .then(()=> {
+
+          res.end();
+        })
     })
   }else{
-    borders.on('data', (boundary) => {
+    borders.on('data', (place) => {
       //inital fetch
-      // extractQueue.push(boundary);
-      return res.write(JSON.stringify(boundary));
+      extractQueue.push(
+        StateDataTag.findOne({'locationName': place.name, 'subtype': "high_school"})
+          .then((result) => {
+            res.write(`{"name":"${place.name}", "data":"${result.data}"}`);
+          })
+          .catch((e) => {
+            console.log(`error caught on ${place.name}`)
+          })
+        );
+      return res.write(JSON.stringify(place));
     })
     .on('end', () => {
-      return res.end();
-      // return resolveResponseStream();
+      Promise.all(extractQueue)
+        .then(()=> {
+          console.log('res ended')
+          res.end();
+        })
     })
   }
-
 })
 
 export = router;
