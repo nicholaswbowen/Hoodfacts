@@ -1,5 +1,4 @@
 import * as express from 'express';
-import {placesData} from '../lib/googlePlaces';
 import {CityBoundaries} from '../models/CityBoundary';
 import {StateBoundaries} from '../models/StateBoundary';
 import {StateDataTag} from '../models/StateDataTag';

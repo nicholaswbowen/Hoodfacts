@@ -14,6 +14,7 @@ import * as path from 'path';
 import routes from './routes';
 import {User} from './models/User';
 import {cookieList} from './lib/dev';
+import {generateMetaData} from './lib/generateMetaData';
 // routes
 import * as user from './api/user';
 import * as auth from './api/auth';
@@ -56,6 +57,7 @@ mongoose.connect(process.env.MONGO_URI)
         admin.roles = ['user', 'admin'];
         admin.save();
     });
+  generateMetaData();
   }).catch((e) => {
     console.log(e);
   });

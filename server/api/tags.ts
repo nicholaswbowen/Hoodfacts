@@ -1,5 +1,4 @@
 import * as express from 'express';
-import {placesData} from '../lib/googlePlaces';
 import {CityTagsMetaData} from '../models/CityTagsMetaData';
 import {StateTagsMetaData} from '../models/StateTagsMetaData';
 let router = express.Router();

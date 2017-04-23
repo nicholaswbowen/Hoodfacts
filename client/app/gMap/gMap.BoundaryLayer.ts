@@ -51,7 +51,7 @@ export class BoundaryLayer{
   public projectBorder(place){
     return new Promise((resolve,reject) => {
         let projectedBorders = [];
-        let pathObjects = []
+        let pathObjects = [];
         place.geometry.coordinates.forEach((polygon) => {
           projectedBorders.push(
             polygon[0].map((point) => {
