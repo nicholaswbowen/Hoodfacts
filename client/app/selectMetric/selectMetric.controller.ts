@@ -1,27 +1,18 @@
 
 class SelectMetricController {
   public currentUser;
-  public groups;
+  public dataTypes;
     constructor(private $rootScope, private $http) {
-      this.groups = [
-        {
-          title: 'Education',
-          tags: ["High School", "Bachelors", "Masters and Above"]
-        },
-        {
-          title: 'Crime',
-          tags: ["Homocides", "Robberies"]
-        }
-      ];
+      this.getTags();
     }
   private submitData(tagName){
     this.$rootScope.activeTag = tagName;
   }
   private getTags(){
-    let query;
-    this.$http.get(`/api/tags/?tagtype=${this.$rootScope.mapZoomLevel}`)
+    this.$http.get(`/api/tags/?tagType=${this.$rootScope.mapZoomLevel}`)
       .then((result)=> {
         console.log(result);
+        this.dataTypes = result.data;
       })
   }
  }

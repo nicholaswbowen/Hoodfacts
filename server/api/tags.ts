@@ -10,12 +10,12 @@ router.get('/tags', (req, res, next) => {
   }else if (req.query.tagType === 'city'){
     model = CityTagsMetaData;
   }else{
-    res.write({message: "invalid or missing tag type"})
+    res.write(JSON.stringify({message: "invalid or missing tag type"}))
     return res.end();
   }
   model.find()
     .then((tags) => {
-      res.write(tags);
+      res.write(JSON.stringify(tags));
       return res.end();
     })
 })

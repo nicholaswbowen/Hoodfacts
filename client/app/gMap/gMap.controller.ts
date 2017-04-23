@@ -19,6 +19,7 @@ class gMapController{
     }
   }
   public bootStrapMap(){
+    this.$rootScope.mapZoomLevel = "states";
     let self = this;
 
     GoogleMapsLoader.KEY = 'AIzaSyCUVX_TYWU5VOBjTr5B4-lN_H0X9OgNimM';
@@ -78,10 +79,7 @@ class gMapController{
 
 
          let newBoundaryType = self.checkMapZoom();
-         console.log(self.currentBoundaryType);
-         console.log(newBoundaryType);
          if (self.currentBoundaryType !== newBoundaryType){
-           console.log('switched')
            self.canvasLayer = undefined;
            self.lastBounds = undefined;
          }

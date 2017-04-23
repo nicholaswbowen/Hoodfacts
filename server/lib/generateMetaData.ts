@@ -9,22 +9,22 @@ export const generateMetaData = () => {
   StateTagsMetaData.remove({}, () => {
     console.log('cleared state metadata')
   })
-   
+
   function findTags(tagsType,metaDataType){
     let query:any = {};
 
     generateTags()
-    .then((resultTags:any) => {
-      resultTags.forEach((tagSubtypes,tagType) => {
-        metaDataType.create({type:tagType,subtypes:tagSubtypes})
-          .then((result) => {
-            console.log(`created tags with id: ${result._id}`);
+      .then((resultTags:any) => {
+        resultTags.forEach((tagSubtypes,tagType) => {
+          metaDataType.create({type:tagType,subtypes:tagSubtypes})
+            .then((result) => {
+              console.log(`created tags with id: ${result._id}`);
+            })
+            .catch((e) => {
+              console.log(e);
+            })
           })
-          .catch((e) => {
-            console.log(e);
-          })
-        })
-    })
+      })
 
 
     function generateTags(){
@@ -45,7 +45,6 @@ export const generateMetaData = () => {
               if (!query.$and){
                 Object.assign(query,{$and: []});
               }
-              console.log(resultTags);
               query.$and.push({subtype:{$ne:result.subtype}});
               return makeQuery();
             }else{

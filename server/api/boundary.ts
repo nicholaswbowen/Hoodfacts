@@ -2,6 +2,7 @@ import * as express from 'express';
 import {CityBoundaries} from '../models/CityBoundary';
 import {StateBoundaries} from '../models/StateBoundary';
 import {StateDataTag} from '../models/StateDataTag';
+import {CityDataTag} from '../models/CityDataTag';
 let router = express.Router();
 
 function checkBounds(bounds,yMin,xMin,yMax,xMax){
@@ -21,67 +22,59 @@ router.get('/boundary', function(req, res, next) {
     {'bounds.xMax': {$gte:req.query.xMin, $lte:req.query.xMax},
     'bounds.yMax': {$gte:req.query.yMin, $lte:req.query.yMax}}],
  };
- let activeModel;
+ let activeBoundaryModel;
+ let activeDataModel;
  if (req.query.searchBy === 'cities'){
-    activeModel = CityBoundaries;
+    activeBoundaryModel = CityBoundaries;
+    activeDataModel = CityDataTag;
  }
  else if (req.query.searchBy === 'states'){
-   activeModel = StateBoundaries;
+   activeBoundaryModel = StateBoundaries;
+   activeDataModel = StateDataTag;
  }
   let extractQueue = [];
-  let resolveQueue:any = () => {
+  let borders = activeBoundaryModel.find(query).cursor();
+  let addToQueue = (place) => {
+    //push all the promises into an array so we know when to end the response.
+    extractQueue.push(
+      activeDataModel.findOne({'locationName': place.name, 'subtype': "high_school"})
+        .then((result) => {
+          res.write(`{"name":"${place.name}", "data":"${result.data}"}`);
+        })
+        .catch((e) => {
 
+        })
+      );
   }
-  let resolveResponseStream = () => {
-    resolveQueue = resolveQueue();
+  let resolveQueue = () => {
+    //end the response once the promises resolve
+    Promise.all(extractQueue)
+      .then(()=> {
+        res.end();
+      })
   }
-  let borders = activeModel.find(query).cursor();
   if (req.query.exclude === "true"){
+    // if we are excluding, attach is stream handler;
     borders.on('data', (place) => {
       if (checkBounds(place.bounds,req.query.eyMin,req.query.exMin,req.query.eyMax,req.query.exMax)){
-        //exclude this
         return;
       }else{
-        //send this
-        extractQueue.push(
-          StateDataTag.findOne({'locationName': place.name, 'subtype': "high_school"})
-            .then((result) => {
-              res.write(`{"name":"${place.name}", "data":"${result.data}"}`);
-            })
-            .catch((e) => {
-
-            })
-          );
+        addToQueue(place);
         return res.write(JSON.stringify(place));
       }
     })
     .on('end', (d) => {
-      Promise.all(extractQueue)
-        .then(()=> {
-
-          res.end();
-        })
+      //once the cursor closes itself, we know that there are not any more data calls that need to be made, so we can call resolveQueue();
+      resolveQueue();
     })
   }else{
+    // if we aren't excluding, attach is stream handler
     borders.on('data', (place) => {
-      //inital fetch
-      extractQueue.push(
-        StateDataTag.findOne({'locationName': place.name, 'subtype': "high_school"})
-          .then((result) => {
-            res.write(`{"name":"${place.name}", "data":"${result.data}"}`);
-          })
-          .catch((e) => {
-            console.log(`error caught on ${place.name}`)
-          })
-        );
+      addToQueue(place);
       return res.write(JSON.stringify(place));
     })
     .on('end', () => {
-      Promise.all(extractQueue)
-        .then(()=> {
-          console.log('res ended')
-          res.end();
-        })
+      resolveQueue();
     })
   }
 })
