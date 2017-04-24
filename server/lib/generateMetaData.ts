@@ -56,4 +56,5 @@ export const generateMetaData = () => {
     }
   }
   findTags(StateDataTag,StateTagsMetaData);
+  findTags(CityDataTag,CityTagsMetaData);
 }

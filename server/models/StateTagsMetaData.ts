@@ -1,6 +1,6 @@
 let mongoose = require('mongoose');
 let stateTagsMetaData = new mongoose.Schema({
-  type: String,
+  type: {type:String, index: false},
   subtypes: [String]
 });
 

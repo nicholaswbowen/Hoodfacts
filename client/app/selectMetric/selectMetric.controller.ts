@@ -6,7 +6,8 @@ class SelectMetricController {
       this.getTags();
     }
   private submitData(tagName){
-    this.$rootScope.activeTag = tagName;
+    this.$rootScope.currentMetric = tagName;
+    this.$rootScope.$emit('redrawMap');
   }
   private getTags(){
     this.$http.get(`/api/tags/?tagType=${this.$rootScope.mapZoomLevel}`)

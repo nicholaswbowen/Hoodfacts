@@ -5,6 +5,7 @@ import {opacity} from 'd3-color';
 declare var canvas;
 declare var google;
 export class BoundaryLayer{
+  private metric;
   private dataMax;
   private dataMin;
   private overlayProjection;
@@ -15,12 +16,13 @@ export class BoundaryLayer{
   public boundaryType:string;
   public lastViewBounds:any;
   public viewBounds:any;
-  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,boundaryType){
+  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,boundaryType,metric){
+    this.metric = metric;
     this.dataMax = 0;
     this.dataMin = 100000000;
     this.placeCoords = new Map();
     this.boundaryType = boundaryType;
-    this.drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint);
+    this.drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric);
   }
   private colorPicker(place){
     // let random = () => Math.floor(Math.random() * 255);
@@ -37,14 +39,15 @@ export class BoundaryLayer{
       .range(['yellow','red']);
     return scale(data);
   }
-  public drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint){
-    this.lastViewBounds = lastViewBounds;
-    this.viewBounds = viewBounds;
+  public drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric){
     this.overlayProjection = overlayProjection;
     this.canvas = canvas;
+    this.viewBounds = viewBounds;
+    this.lastViewBounds = lastViewBounds;
+    this.centerPoint = centerPoint;
+    this.metric = metric;
     this.ctx = this.canvas.getContext('2d');
     this.ctx.globalAlpha = 0.4;
-    this.centerPoint = centerPoint;
     this.getBoundaries();
   }
 
@@ -73,7 +76,7 @@ export class BoundaryLayer{
 
   }
   public createQuery() {
-    let boundsQuery = `&xMax=${this.viewBounds.xMax}&yMax=${this.viewBounds.yMax}&xMin=${this.viewBounds.xMin}&yMin=${this.viewBounds.yMin}`
+    let boundsQuery = `&xMax=${this.viewBounds.xMax}&yMax=${this.viewBounds.yMax}&xMin=${this.viewBounds.xMin}&yMin=${this.viewBounds.yMin}&dataTarget=${this.metric}`
     let url;
     if (this.lastViewBounds){
       let excludeQuery = `&exMax=${this.lastViewBounds.xMax}&eyMax=${this.lastViewBounds.yMax}&exMin=${this.lastViewBounds.xMin}&eyMin=${this.lastViewBounds.yMin}`
