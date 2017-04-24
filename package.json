@@ -101,6 +101,8 @@
     "connect-roles": "^3.1.2",
     "cookie-parser": "^1.4.3",
     "crypto": "0.0.3",
+    "d3-color": "^1.0.3",
+    "d3-scale": "^1.0.5",
     "debug": "^2.6.1",
     "dotenv": "^4.0.0",
     "ejs": "^2.5.5",

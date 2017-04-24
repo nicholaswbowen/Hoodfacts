@@ -1,7 +1,8 @@
 import * as express from 'express';
-import {placesData} from '../lib/googlePlaces';
 import {CityBoundaries} from '../models/CityBoundary';
 import {StateBoundaries} from '../models/StateBoundary';
+import {StateDataTag} from '../models/StateDataTag';
+import {CityDataTag} from '../models/CityDataTag';
 let router = express.Router();
 
 function checkBounds(bounds,yMin,xMin,yMax,xMax){
@@ -21,57 +22,61 @@ router.get('/boundary', function(req, res, next) {
     {'bounds.xMax': {$gte:req.query.xMin, $lte:req.query.xMax},
     'bounds.yMax': {$gte:req.query.yMin, $lte:req.query.yMax}}],
  };
- let activeModel;
+ let activeBoundaryModel;
+ let activeDataModel;
  if (req.query.searchBy === 'cities'){
-    activeModel = CityBoundaries;
+    activeBoundaryModel = CityBoundaries;
+    activeDataModel = CityDataTag;
  }
  else if (req.query.searchBy === 'states'){
-   console.log(req.query.searchBy);
-   activeModel = StateBoundaries;
+   activeBoundaryModel = StateBoundaries;
+   activeDataModel = StateDataTag;
  }
   let extractQueue = [];
-  // let resolveQueue:any = () => {
-  //   return () => {
-  //     extractQueue.forEach((city) => {
-  //       res.write(`{"name": "${city.name}", "data":"${data.extractCityData(city.bounds)}"}`);
-  //     })
-  //     res.end();
-  //   }
-  // }
-  // let resolveResponseStream = () => {
-  //   resolveQueue = resolveQueue();
-  // }
-  let borders = activeModel.find(query).cursor();
-  // data.makeQuery('food',req.query.center,50000)
-  //   .then(() => resolveResponseStream());
-  if (req.query.exclude === "true"){
-    borders.on('data', (boundary) => {
+  let borders = activeBoundaryModel.find(query).cursor();
+  let addToQueue = (place) => {
+    //push all the promises into an array so we know when to end the response.
+    extractQueue.push(
+      activeDataModel.findOne({'locationName': place.name, 'subtype': req.query.dataTarget})
+        .then((result) => {
+          res.write(`{"name":"${place.name}", "data":"${result.data}"}`);
+        })
+        .catch((e) => {
 
-      if (checkBounds(boundary.bounds,req.query.eyMin,req.query.exMin,req.query.eyMax,req.query.exMax)){
-        //exclude this
+        })
+      );
+  }
+  let resolveQueue = () => {
+    //end the response once the promises resolve
+    Promise.all(extractQueue)
+      .then(()=> {
+        res.end();
+      })
+  }
+  if (req.query.exclude === "true"){
+    // if we are excluding, attach is stream handler;
+    borders.on('data', (place) => {
+      if (checkBounds(place.bounds,req.query.eyMin,req.query.exMin,req.query.eyMax,req.query.exMax)){
         return;
       }else{
-        //send this
-        // extractQueue.push(boundary);
-        return res.write(JSON.stringify(boundary));
+        addToQueue(place);
+        return res.write(JSON.stringify(place));
       }
     })
     .on('end', (d) => {
-      return res.end();
-      // return resolveResponseStream();
+      //once the cursor closes itself, we know that there are not any more data calls that need to be made, so we can call resolveQueue();
+      resolveQueue();
     })
   }else{
-    borders.on('data', (boundary) => {
-      //inital fetch
-      // extractQueue.push(boundary);
-      return res.write(JSON.stringify(boundary));
+    // if we aren't excluding, attach is stream handler
+    borders.on('data', (place) => {
+      addToQueue(place);
+      return res.write(JSON.stringify(place));
     })
     .on('end', () => {
-      return res.end();
-      // return resolveResponseStream();
+      resolveQueue();
     })
   }
-
 })
 
 export = router;

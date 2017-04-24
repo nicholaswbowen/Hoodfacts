@@ -14,6 +14,7 @@ import Profile from './profile/profile.module';
 import UsersIndex from './usersIndex/usersIndex.module';
 import Sidebar from './sidebar/sidebar.module';
 import SplashPage from './splashPage/splashPage.module';
+import SelectMetric from './selectMetric/selectMetric.module';
 
 const name = 'app';
 const dependencies = [
@@ -28,7 +29,8 @@ const dependencies = [
   Profile,
   UsersIndex,
   Sidebar,
-  SplashPage
+  SplashPage,
+  SelectMetric
 ];
 
 angular.module(name, dependencies)
