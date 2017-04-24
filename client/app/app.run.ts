@@ -20,8 +20,10 @@ export default [
     $localStorage,
     $timeout
   ) {
+    // set initial defaults for the vizualizations.
     $rootScope.mapZoomLevel = "states";
-    $rootScope.currentMetric = "High School Diploma Attainment Rate";
+    $rootScope.currentStateMetric = "High School Diploma Attainment Rate";
+    $rootScope.currentCityMetric = "Estimated Population";
     $state.go('splashPage');
     $rootScope.$on('$stateChangeStart', (event, next) => {
       UserService.getCurrentUser().then((user) => {

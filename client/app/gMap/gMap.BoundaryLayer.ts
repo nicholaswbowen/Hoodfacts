@@ -6,13 +6,13 @@ declare var canvas;
 declare var google;
 export class BoundaryLayer{
   private metric;
-  private dataMax;
-  private dataMin;
   private overlayProjection;
   private canvas;
   private ctx;
   private centerPoint;
   private placeCoords;
+  public dataMax;
+  public dataMin;
   public boundaryType:string;
   public lastViewBounds:any;
   public viewBounds:any;
@@ -25,8 +25,6 @@ export class BoundaryLayer{
     this.drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric);
   }
   private colorPicker(place){
-    // let random = () => Math.floor(Math.random() * 255);
-    // return `rgba(${random()}, ${random()}, ${random()}, 0.4)`
     if (place.data){
       return this.colorRange(place.data);
     }else{
@@ -39,6 +37,7 @@ export class BoundaryLayer{
       .range(['yellow','red']);
     return scale(data);
   }
+
   public drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric){
     this.overlayProjection = overlayProjection;
     this.canvas = canvas;
@@ -71,6 +70,7 @@ export class BoundaryLayer{
           pathObject.closePath();
           pathObjects.push(pathObject);
         })
+
         resolve(pathObjects);
     })
 
@@ -146,6 +146,7 @@ export class BoundaryLayer{
   public drawBorder(place, color){
     if (this.checkBounds(place.bounds)){
         place.canvasPaths.forEach((polygon) => {
+          // this.ctx.fillText();
           this.ctx.fillStyle = color;
           this.ctx.fill(polygon);
         })
