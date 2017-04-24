@@ -1,18 +1,14 @@
 <div id="sidenavContainer">
   <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" ng-click="vm.closeNav()">&times;</a>
-
-
     <!--home-->
     <a ui-sref="home">Home</a>
-
     <!--login/register-->
     <a ng-click="vm.openAuth()" ng-if="vm.currentUser && !vm.isAuthenticated">Login/Register</a>
     <a ng-if="vm.currentUser && vm.isAuthenticated" ng-click="vm.logout()">Logout</a>
     <a ng-click="vm.openProfile()" ng-if="vm.isAuthenticated">Profile</a>
     <a ui-sref="usersIndex" ng-if="vm.isAuthenticated && vm.isAuthorized('admin')">Users Index</a>
-    <a>tie data here</a>
-    <a>tie data here</a>
+    <select-metric></select-metric>
   </div>
 </div>
 <!-- Use any element to open the sidenav -->

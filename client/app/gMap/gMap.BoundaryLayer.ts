@@ -1,45 +1,61 @@
 import * as oboe from 'oboe';
+import {scaleLinear} from 'd3-scale';
+import {color} from 'd3-color';
+import {opacity} from 'd3-color';
 declare var canvas;
 declare var google;
 export class BoundaryLayer{
+  private metric;
+  private dataMax;
+  private dataMin;
   private overlayProjection;
   private canvas;
   private ctx;
   private centerPoint;
-  private cityCoords;
+  private placeCoords;
   public boundaryType:string;
   public lastViewBounds:any;
   public viewBounds:any;
-  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,boundaryType){
-    this.cityCoords = new Map();
+  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,boundaryType,metric){
+    this.metric = metric;
+    this.dataMax = 0;
+    this.dataMin = 100000000;
+    this.placeCoords = new Map();
     this.boundaryType = boundaryType;
-    this.drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint);
+    this.drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric);
   }
-  private colorPicker(city,min,max){
-    let random = () => Math.floor(Math.random() * 255);
-    return `rgba(${random()}, ${random()}, ${random()}, 0.4)`
-    // if (city.data === 'no data'){
-    //   return `rgba(0, 0, 0, 0.2)`;
-    // }else{
-    //   return `rgba(${255 - 50*city.data}, 255, 0, 0.4)`;
-    // }
-
+  private colorPicker(place){
+    // let random = () => Math.floor(Math.random() * 255);
+    // return `rgba(${random()}, ${random()}, ${random()}, 0.4)`
+    if (place.data){
+      return this.colorRange(place.data);
+    }else{
+      return `rgb(0, 0, 0)`;
+    }
   }
-  public drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint){
-    this.lastViewBounds = lastViewBounds;
-    this.viewBounds = viewBounds;
+  private colorRange(data){
+    let scale = scaleLinear()
+      .domain([this.dataMin,this.dataMax])
+      .range(['yellow','red']);
+    return scale(data);
+  }
+  public drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric){
     this.overlayProjection = overlayProjection;
     this.canvas = canvas;
-    this.ctx = this.canvas.getContext('2d');
+    this.viewBounds = viewBounds;
+    this.lastViewBounds = lastViewBounds;
     this.centerPoint = centerPoint;
+    this.metric = metric;
+    this.ctx = this.canvas.getContext('2d');
+    this.ctx.globalAlpha = 0.4;
     this.getBoundaries();
   }
 
-  public projectBorder(city){
+  public projectBorder(place){
     return new Promise((resolve,reject) => {
         let projectedBorders = [];
-        let pathObjects = []
-        city.geometry.coordinates.forEach((polygon) => {
+        let pathObjects = [];
+        place.geometry.coordinates.forEach((polygon) => {
           projectedBorders.push(
             polygon[0].map((point) => {
               let coords = new google.maps.LatLng(point[1], point[0]);
@@ -60,7 +76,7 @@ export class BoundaryLayer{
 
   }
   public createQuery() {
-    let boundsQuery = `&xMax=${this.viewBounds.xMax}&yMax=${this.viewBounds.yMax}&xMin=${this.viewBounds.xMin}&yMin=${this.viewBounds.yMin}`
+    let boundsQuery = `&xMax=${this.viewBounds.xMax}&yMax=${this.viewBounds.yMax}&xMin=${this.viewBounds.xMin}&yMin=${this.viewBounds.yMin}&dataTarget=${this.metric}`
     let url;
     if (this.lastViewBounds){
       let excludeQuery = `&exMax=${this.lastViewBounds.xMax}&eyMax=${this.lastViewBounds.yMax}&exMin=${this.lastViewBounds.xMin}&eyMin=${this.lastViewBounds.yMin}`
@@ -74,8 +90,8 @@ export class BoundaryLayer{
     let resolveStreams:any = () => {
       return () => {
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
-        this.cityCoords.forEach((city) => {
-          this.drawBorder(city,this.colorPicker(city,0,5));
+        this.placeCoords.forEach((place) => {
+          this.drawBorder(place,this.colorPicker(place));
         })
       }
     }
@@ -83,31 +99,37 @@ export class BoundaryLayer{
       resolveStreams = resolveStreams();
     }
     oboe({url})
-      .node('{bounds}',(city) => {
-        this.cityCoords.set(city.name,city);
-        this.projectBorder(city)
+      .node('{bounds}',(place) => {
+        this.placeCoords.set(place.name,place);
+        this.projectBorder(place)
           .then((result) => {
-            city.canvasPaths = result;
-            this.cityCoords.set(city.name,city);
-            this.drawBorder(city,`rgba(153, 255, 153, 0.4)`);
+            place.canvasPaths = result;
+            this.placeCoords.set(place.name,place);
+            this.drawBorder(place,`rgb(153, 255, 153)`);
           })
         return oboe.drop;
       })
-      .node('{data}', (cityData) => {
-        let city = this.cityCoords.get(cityData.name);
-        this.cityCoords.set(city.name, Object.assign(city,cityData));
+      .node('{data}', (placeData) => {
+        if (placeData.data >= this.dataMax){
+          this.dataMax = placeData.data;
+        }
+        if (placeData.data <= this.dataMin){
+          this.dataMin = placeData.data;
+        }
+        let place = this.placeCoords.get(placeData.name);
+        this.placeCoords.set(place.name, Object.assign(place,placeData));
       })
       .on('end', () => {
         resolveHeatMap();
       })
 
-      if(this.cityCoords){
-        this.cityCoords.forEach((city) => {
-          this.projectBorder(city)
+      if(this.placeCoords){
+        this.placeCoords.forEach((place) => {
+          this.projectBorder(place)
             .then((result) => {
-              city.canvasPaths = result;
-              this.cityCoords.set(city.name,city);
-              this.drawBorder(city,`rgba(153, 255, 153, 0.4)`);
+              place.canvasPaths = result;
+              this.placeCoords.set(place.name,place);
+              this.drawBorder(place,`rgb(153, 255, 153)`);
             })
         })
         resolveHeatMap();
@@ -121,9 +143,9 @@ export class BoundaryLayer{
     return (checkyMin && checkxMin || checkyMax && checkxMax);
 
   }
-  public drawBorder(city, color){
-    if (this.checkBounds(city.bounds)){
-        city.canvasPaths.forEach((polygon) => {
+  public drawBorder(place, color){
+    if (this.checkBounds(place.bounds)){
+        place.canvasPaths.forEach((polygon) => {
           this.ctx.fillStyle = color;
           this.ctx.fill(polygon);
         })

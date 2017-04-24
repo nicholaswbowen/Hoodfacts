@@ -7,7 +7,8 @@ class SidebarController {
     private SessionService: SessionServiceClass,
     private UserService,
     private $sessionStorage,
-    private $uibModal
+    private $uibModal,
+    private $rootScope
   ) {
         this.isAuth();
     }
@@ -22,6 +23,9 @@ class SidebarController {
        document.getElementById("mySidenav").style.width = "0";
        document.getElementById("sidenavContainer").setAttribute('class', 'col-xs-0');
        document.getElementById("map").setAttribute('class', 'col-xs-12');
+       window.setTimeout(()=>{
+         this.$rootScope.$emit('realignMap');
+       },500)
    }
    public openProfile() {
      this.$uibModal.open({
@@ -71,7 +75,8 @@ class SidebarController {
    'SessionService',
    'UserService',
    '$sessionStorage',
-   '$uibModal'
+   '$uibModal',
+   '$rootScope'
  ];
 
 export default SidebarController
