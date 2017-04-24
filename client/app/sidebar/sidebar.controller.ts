@@ -25,7 +25,8 @@ class SidebarController {
    }
    public openProfile() {
      this.$uibModal.open({
-       component: 'profile'
+       component: 'profile',
+       size: 'lg'
      });
    };
 
@@ -35,6 +36,8 @@ class SidebarController {
        size: 'lg'
      });
    };
+
+
    public isAuthorized(roles: string) {
      return this.SessionService.isAuthorized(roles);
    }

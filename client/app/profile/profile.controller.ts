@@ -9,7 +9,8 @@ class ProfileController {
     private $state: ng.ui.IStateService,
     private toastr,
     SessionService,
-    $stateParams
+    $stateParams,
+    private $uibModal
   ) {
     if (!$stateParams['username'] || $stateParams['username'] === '') {
       this.profileID = SessionService.getUser().username;
@@ -18,7 +19,7 @@ class ProfileController {
     }
     this.getProfile();
   }
-
+  
   public getProfile() {
     // api call to profiles
     this.ProfileService.getProfile(this.profileID).then((res) => {
