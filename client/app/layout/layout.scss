@@ -47,6 +47,15 @@
     transition: 0.3s
 }
 
+.panel-default{
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s
+}
+
 .sidenav a:hover, .offcanvas button:focus{
     color: #f1f1f1;
 }
@@ -79,4 +88,8 @@
 
 #sidebarButton{
   float: right;
+}
+
+#username{
+  text-align: center;
 }
