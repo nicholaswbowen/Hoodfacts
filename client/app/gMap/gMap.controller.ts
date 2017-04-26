@@ -11,8 +11,9 @@ class gMapController{
   public lastBounds;
   public currentBounds;
   public mapsize;
+  private metricSelection;
   public currentBoundaryType:string;
-  constructor(private $rootScope){
+  constructor(private $rootScope, private $sessionStorage){
     this.mapsize = {height: document.getElementById('map').clientHeight, width: document.getElementById('map').clientWidth}
     this.$onInit = () => {
       this.bootStrapMap();
@@ -23,10 +24,10 @@ class gMapController{
     GoogleMapsLoader.KEY = 'AIzaSyCUVX_TYWU5VOBjTr5B4-lN_H0X9OgNimM';
     GoogleMapsLoader.load(function(google) {
       self.map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 47.673988, lng:-122.121513},
+        center: {lat: 39.8333333, lng:-98.585522},
         maxZoom: 13,
         minZoom: 3,
-        zoom: 8,
+        zoom: 5,
         disableDefaultUI: true,
         zoomControl: true,
         styles: MAP_TERRAIN_STYLE
@@ -70,8 +71,8 @@ class gMapController{
          let centerPoint = projection.fromLatLngToDivPixel(this.map.getCenter());
          var bounds = self.map.getBounds();
          self.mapsize = {height: document.getElementById('map').offsetHeight, width: (document.getElementById('map').offsetWidth)};
-         this.canvas_.style.left = (centerPoint.x - self.mapsize.width  / 2) + "px";
-         this.canvas_.style.top  = (centerPoint.y - self.mapsize.height / 2) + "px";
+         this.canvas_.style.left = (centerPoint.x - self.mapsize.width  / 2) + 'px';
+         this.canvas_.style.top  = (centerPoint.y - self.mapsize.height / 2) + 'px';
          this.canvas_.setAttribute('width', self.mapsize.width);
          this.canvas_.setAttribute('height', self.mapsize.height);
          //
@@ -93,10 +94,11 @@ class gMapController{
          }
          self.currentBounds = self.setBounds(bounds.getNorthEast(),bounds.getSouthWest(),offset);
          if (!self.canvasLayer){
-           self.canvasLayer = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),newBoundaryType,self.$rootScope.currentMetric);
+           self.canvasLayer = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),newBoundaryType,self.metricSelection,self.$rootScope);
          }else{
-           self.canvasLayer.drawOverlay(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),self.$rootScope.currentMetric);
+           self.canvasLayer.drawOverlay(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),self.metricSelection);
          }
+
          self.lastBounds = self.currentBounds;
          self.currentBoundaryType = newBoundaryType;
        };
@@ -106,13 +108,22 @@ class gMapController{
      });
   }
   public checkMapZoom(){
+    let checkChanged = this.$rootScope.mapZoomLevel;
+    let result;
     if (this.map.zoom <= 8){
-      this.$rootScope.mapZoomLevel = "states";
-      return "states";
+      //'fetchNewtags'
+      this.metricSelection = this.$rootScope.currentStateMetric;
+      this.$rootScope.mapZoomLevel = 'states';
+      result = 'states';
     }else{
-      this.$rootScope.mapZoomLevel = "cities";
-      return "cities";
+      this.metricSelection = this.$rootScope.currentCityMetric;
+      this.$rootScope.mapZoomLevel = 'cities';
+      result = 'cities';
     }
+    if (checkChanged !== this.$rootScope.mapZoomLevel){
+        this.$rootScope.$emit('fetchNewtags');
+    }
+    return result;
  }
   private resetCanvas(){
     this.canvasLayer = undefined;
@@ -128,5 +139,5 @@ class gMapController{
   }
 }
 
-gMapController.$inject = ['$rootScope'];
+gMapController.$inject = ['$rootScope', '$sessionStorage'];
 export default gMapController;

@@ -1,6 +1,7 @@
 <div id="sidenavContainer">
   <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" ng-click="vm.closeNav()">&times;</a>
+
     <!--home-->
     <a ui-sref="home">Home</a>
     <!--login/register-->
@@ -10,6 +11,7 @@
     <a ui-sref="usersIndex" ng-if="vm.isAuthenticated && vm.isAuthorized('admin')">Users Index</a>
     <select-metric></select-metric>
   </div>
+
 </div>
 <!-- Use any element to open the sidenav -->
 <div id="sidebarButton" ng-click="vm.openNav()"><img style="width: 150px;" src="client/assets/menu.png">
