@@ -1,32 +1,28 @@
 import * as oboe from 'oboe';
 import {scaleLinear} from 'd3-scale';
-import {color} from 'd3-color';
-import {opacity} from 'd3-color';
 declare var canvas;
 declare var google;
 export class BoundaryLayer{
+  private $rootScope;
   private metric;
-  private dataMax;
-  private dataMin;
   private overlayProjection;
   private canvas;
   private ctx;
   private centerPoint;
   private placeCoords;
+  public dataMax;
+  public dataMin;
   public boundaryType:string;
   public lastViewBounds:any;
   public viewBounds:any;
-  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,boundaryType,metric){
+  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,boundaryType,metric,$rootScope){
     this.metric = metric;
-    this.dataMax = 0;
-    this.dataMin = 100000000;
+    this.$rootScope = $rootScope;
     this.placeCoords = new Map();
     this.boundaryType = boundaryType;
     this.drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric);
   }
   private colorPicker(place){
-    // let random = () => Math.floor(Math.random() * 255);
-    // return `rgba(${random()}, ${random()}, ${random()}, 0.4)`
     if (place.data){
       return this.colorRange(place.data);
     }else{
@@ -39,6 +35,7 @@ export class BoundaryLayer{
       .range(['yellow','red']);
     return scale(data);
   }
+
   public drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric){
     this.overlayProjection = overlayProjection;
     this.canvas = canvas;
@@ -71,6 +68,7 @@ export class BoundaryLayer{
           pathObject.closePath();
           pathObjects.push(pathObject);
         })
+
         resolve(pathObjects);
     })
 
@@ -85,11 +83,28 @@ export class BoundaryLayer{
       return `/api/boundary/?searchBy=${this.boundaryType}&exclude=false${boundsQuery}`
     }
   }
+
+  public checkMinMax(){
+    let values = [];
+    this.placeCoords.forEach((place) => {
+      if (place.data){
+        values.push(place.data);
+      }
+
+      console.log(place.data);
+    })
+    this.dataMax = Math.max(...values)
+    this.dataMin = Math.min(...values)
+    this.$rootScope.$emit('createLegend', {min:this.dataMin,max:this.dataMax});
+  }
+
   public getBoundaries(){
     let url = this.createQuery() ;
     let resolveStreams:any = () => {
       return () => {
+        this.checkMinMax()
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+
         this.placeCoords.forEach((place) => {
           this.drawBorder(place,this.colorPicker(place));
         })
@@ -110,12 +125,6 @@ export class BoundaryLayer{
         return oboe.drop;
       })
       .node('{data}', (placeData) => {
-        if (placeData.data >= this.dataMax){
-          this.dataMax = placeData.data;
-        }
-        if (placeData.data <= this.dataMin){
-          this.dataMin = placeData.data;
-        }
         let place = this.placeCoords.get(placeData.name);
         this.placeCoords.set(place.name, Object.assign(place,placeData));
       })
@@ -146,6 +155,7 @@ export class BoundaryLayer{
   public drawBorder(place, color){
     if (this.checkBounds(place.bounds)){
         place.canvasPaths.forEach((polygon) => {
+          // this.ctx.fillText();
           this.ctx.fillStyle = color;
           this.ctx.fill(polygon);
         })
