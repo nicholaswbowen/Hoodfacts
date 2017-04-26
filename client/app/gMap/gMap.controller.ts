@@ -94,11 +94,11 @@ class gMapController{
          }
          self.currentBounds = self.setBounds(bounds.getNorthEast(),bounds.getSouthWest(),offset);
          if (!self.canvasLayer){
-           self.canvasLayer = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),newBoundaryType,self.metricSelection);
+           self.canvasLayer = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),newBoundaryType,self.metricSelection,self.$rootScope);
          }else{
            self.canvasLayer.drawOverlay(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),self.metricSelection);
          }
-         self.$rootScope.$emit('createKey', {min:self.canvasLayer.dataMin,max:self.canvasLayer.dataMax});
+
          self.lastBounds = self.currentBounds;
          self.currentBoundaryType = newBoundaryType;
        };

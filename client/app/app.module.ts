@@ -15,7 +15,7 @@ import UsersIndex from './usersIndex/usersIndex.module';
 import Sidebar from './sidebar/sidebar.module';
 import SplashPage from './splashPage/splashPage.module';
 import SelectMetric from './selectMetric/selectMetric.module';
-import DataKey from './dataKey/dataKey.module';
+import legend from './legend/legend.module';
 const name = 'app';
 const dependencies = [
   'ui.bootstrap',
@@ -31,7 +31,7 @@ const dependencies = [
   Sidebar,
   SplashPage,
   SelectMetric,
-  DataKey
+  legend
 ];
 
 angular.module(name, dependencies)

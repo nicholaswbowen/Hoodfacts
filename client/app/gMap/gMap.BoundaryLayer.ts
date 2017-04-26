@@ -1,10 +1,9 @@
 import * as oboe from 'oboe';
 import {scaleLinear} from 'd3-scale';
-import {color} from 'd3-color';
-import {opacity} from 'd3-color';
 declare var canvas;
 declare var google;
 export class BoundaryLayer{
+  private $rootScope;
   private metric;
   private overlayProjection;
   private canvas;
@@ -16,10 +15,9 @@ export class BoundaryLayer{
   public boundaryType:string;
   public lastViewBounds:any;
   public viewBounds:any;
-  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,boundaryType,metric){
+  constructor(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,boundaryType,metric,$rootScope){
     this.metric = metric;
-    this.dataMax = 0;
-    this.dataMin = 100000000;
+    this.$rootScope = $rootScope;
     this.placeCoords = new Map();
     this.boundaryType = boundaryType;
     this.drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric);
@@ -85,11 +83,28 @@ export class BoundaryLayer{
       return `/api/boundary/?searchBy=${this.boundaryType}&exclude=false${boundsQuery}`
     }
   }
+
+  public checkMinMax(){
+    let values = [];
+    this.placeCoords.forEach((place) => {
+      if (place.data){
+        values.push(place.data);
+      }
+
+      console.log(place.data);
+    })
+    this.dataMax = Math.max(...values)
+    this.dataMin = Math.min(...values)
+    this.$rootScope.$emit('createLegend', {min:this.dataMin,max:this.dataMax});
+  }
+
   public getBoundaries(){
     let url = this.createQuery() ;
     let resolveStreams:any = () => {
       return () => {
+        this.checkMinMax()
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+
         this.placeCoords.forEach((place) => {
           this.drawBorder(place,this.colorPicker(place));
         })
@@ -110,12 +125,6 @@ export class BoundaryLayer{
         return oboe.drop;
       })
       .node('{data}', (placeData) => {
-        if (placeData.data >= this.dataMax){
-          this.dataMax = placeData.data;
-        }
-        if (placeData.data <= this.dataMin){
-          this.dataMin = placeData.data;
-        }
         let place = this.placeCoords.get(placeData.name);
         this.placeCoords.set(place.name, Object.assign(place,placeData));
       })
