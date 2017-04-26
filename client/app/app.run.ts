@@ -20,6 +20,8 @@ export default [
     $localStorage,
     $timeout
   ) {
+    $rootScope.mapZoomLevel = "states";
+    $rootScope.currentMetric = "High School Diploma Attainment Rate";
     $state.go('splashPage');
     $rootScope.$on('$stateChangeStart', (event, next) => {
       UserService.getCurrentUser().then((user) => {

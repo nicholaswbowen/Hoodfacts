@@ -14,11 +14,13 @@ import * as path from 'path';
 import routes from './routes';
 import {User} from './models/User';
 import {cookieList} from './lib/dev';
+import {generateMetaData} from './lib/generateMetaData';
 // routes
 import * as user from './api/user';
 import * as auth from './api/auth';
 import * as boundary from './api/boundary';
 import * as profile from './api/profile';
+import * as tags from './api/tags';
 // replacing deprecated promise
 (<any> mongoose).Promise = global.Promise;
 
@@ -55,6 +57,7 @@ mongoose.connect(process.env.MONGO_URI)
         admin.roles = ['user', 'admin'];
         admin.save();
     });
+  generateMetaData();
   }).catch((e) => {
     console.log(e);
   });
@@ -107,6 +110,7 @@ app.use('/', routes);
 app.use('/api', user);
 app.use('/api', auth);
 app.use('/api', boundary);
+app.use('/api', tags);
 app.use('/api', profile);
 // THIS IS THE INTERCEPTION OF ALL OTHER REQ
 // After server routes / static / api
