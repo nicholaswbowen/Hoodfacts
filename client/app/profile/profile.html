@@ -1,13 +1,16 @@
 <div id="username">
-   <div class="modal-header">
-      <h2>User Name</h2>
-   </div>
-   <br>
-   <div>
-      <h1>{{vm.profile.username}}</h1>
-   </div>
+    <div class="modal-header">
+        <h2>User Name</h2>
+
+    </div>
+    <br>
+    <div>
+        <h1>{{vm.profile.username}}</h1>
+    </div>
 </div>
-<a class="btn btn-success" ng-show="this.$state != home"  ui-sref="home">Home</a>
-<div  class="modal-footer">
-  <button ng-if="this.$state == home" type="button" class="btn btn-default" ng-click="vm.closeModal()">Close</button>
+
+<a class="btn btn-success" ng-show="this.$state != home" ui-sref="home">Home</a>
+<div class="modal-footer">
+    <button ng-if="this.$state == home" type="button" class="btn btn-default" ng-click="vm.closeModal()">Close</button>
+
 </div>
