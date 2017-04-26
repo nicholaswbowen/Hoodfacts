@@ -90,8 +90,6 @@ export class BoundaryLayer{
       if (place.data){
         values.push(place.data);
       }
-
-      console.log(place.data);
     })
     this.dataMax = Math.max(...values)
     this.dataMin = Math.min(...values)

@@ -14,7 +14,6 @@ class LegendController {
     this.legendTickGroup = document.getElementById('legendTickMarks');
     this.legendGradient = document.getElementById('legendGradient');
     this.svg = document.getElementById('legendSvg');
-    console.log(this.svg.width);
     // this.canvas = document.getElementById('legendCanvas');
     // this.ctx = this.canvas.getContext('2d');
 
@@ -46,8 +45,8 @@ class LegendController {
       this.legendTickGroup.removeChild(this.legendTickGroup.firstChild);
     }
     let middle = document.createElementNS('http://www.w3.org/2000/svg','rect');
-    middle.setAttribute('x',`${(this.legendGradient.width.animVal.value*1.25)/2}`);
-    middle.setAttribute('y','25');
+    middle.setAttribute('x',`${this.svg.width.animVal.value/2}`);
+    middle.setAttribute('y','35');
     middle.setAttribute('height','25');
     middle.setAttribute('width','1');
     this.legendTickGroup.appendChild(middle);

@@ -1,7 +1,6 @@
 declare var google;
 import * as GoogleMapsLoader from 'google-maps';
 import {MAP_TERRAIN_STYLE} from './gMap.terrain.styles';
-import {BLANK_MAP} from './gMap.blank.styles';
 import {BoundaryLayer} from './gMap.BoundaryLayer';
 class gMapController{
   public map;
@@ -22,6 +21,7 @@ class gMapController{
   public bootStrapMap(){
     let self = this;
     GoogleMapsLoader.KEY = 'AIzaSyCUVX_TYWU5VOBjTr5B4-lN_H0X9OgNimM';
+    GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
     GoogleMapsLoader.load(function(google) {
       self.map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 39.8333333, lng:-98.585522},
@@ -32,6 +32,7 @@ class gMapController{
         zoomControl: true,
         styles: MAP_TERRAIN_STYLE
       });
+
       // This listener redraws the overlay when the user scrolls around.
       self.map.addListener('center_changed', () => {
           self.boundaryOverlay.draw();
@@ -102,16 +103,80 @@ class gMapController{
          self.lastBounds = self.currentBounds;
          self.currentBoundaryType = newBoundaryType;
        };
-
+       self.addSearchBox();
        self.boundaryOverlay = new boundaryOverlay(self.map);
 
      });
   }
+
+  public addSearchBox(){
+    // sourced from https://developers.google.com/maps/documentation/javascript/examples/places-searchbox
+    let map = this.map;
+    let input = document.getElementById('pac-input');
+    let searchBox = new google.maps.places.SearchBox(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    // Bias the SearchBox results towards current map's viewport.
+    map.addListener('bounds_changed', function() {
+      searchBox.setBounds(map.getBounds());
+    });
+
+    let markers = [];
+    // Listen for the event fired when the user selects a prediction and retrieve
+    // more details for that place.
+    searchBox.addListener('places_changed', function() {
+      let places = searchBox.getPlaces();
+
+      if (places.length == 0) {
+        return;
+      }
+
+      // Clear out the old markers.
+      markers.forEach(function(marker) {
+        marker.setMap(null);
+      });
+      markers = [];
+
+      // For each place, get the icon, name and location.
+      let bounds = new google.maps.LatLngBounds();
+      places.forEach(function(place) {
+        if (!place.geometry) {
+          console.log("Returned place contains no geometry");
+          return;
+        }
+        let icon = {
+          url: place.icon,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(17, 34),
+          scaledSize: new google.maps.Size(25, 25)
+        };
+
+        // Create a marker for each place.
+        markers.push(new google.maps.Marker({
+          map: map,
+          icon: icon,
+          title: place.name,
+          position: place.geometry.location
+        }));
+
+        if (place.geometry.viewport) {
+          // Only geocodes have viewport.
+          bounds.union(place.geometry.viewport);
+        } else {
+          bounds.extend(place.geometry.location);
+        }
+      });
+      map.fitBounds(bounds);
+    });
+
+  }
+
+
   public checkMapZoom(){
     let checkChanged = this.$rootScope.mapZoomLevel;
     let result;
     if (this.map.zoom <= 8){
-      //'fetchNewtags'
       this.metricSelection = this.$rootScope.currentStateMetric;
       this.$rootScope.mapZoomLevel = 'states';
       result = 'states';
