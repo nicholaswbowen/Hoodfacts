@@ -1,7 +1,9 @@
 <uib-accordion ng-repeat="dataType in vm.dataTypes" >
+  <div class="makeItWork">
   <div uib-accordion-group class="panel-default" heading="{{dataType.type}}">
     <div ng-repeat="subtype in dataType.subtypes">
       <a ng-click="vm.submitData(subtype)">{{subtype}}</a>
     </div>
   </div>
+</div>
 </uib-accordion>
