@@ -61,7 +61,7 @@ class LegendController {
       label.setAttribute('fill','black');
       label.setAttribute('text-anchor','middle');
       this.legendTickGroup.appendChild(label);
-      label.appendChild(document.createTextNode(tick.toString()));
+      label.appendChild(document.createTextNode(tick.toFixed(2).toString()));
 //font-family="sans-serif" font-size="20px" fill="red"
 
     })

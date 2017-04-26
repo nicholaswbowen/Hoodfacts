@@ -24,10 +24,10 @@ class gMapController{
     GoogleMapsLoader.KEY = 'AIzaSyCUVX_TYWU5VOBjTr5B4-lN_H0X9OgNimM';
     GoogleMapsLoader.load(function(google) {
       self.map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 47.673988, lng:-122.121513},
+        center: {lat: 39.8333333, lng:-98.585522},
         maxZoom: 13,
         minZoom: 3,
-        zoom: 8,
+        zoom: 5,
         disableDefaultUI: true,
         zoomControl: true,
         styles: MAP_TERRAIN_STYLE
