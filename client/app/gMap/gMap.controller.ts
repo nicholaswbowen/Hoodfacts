@@ -2,7 +2,7 @@ declare var google;
 import * as GoogleMapsLoader from 'google-maps';
 import {MAP_TERRAIN_STYLE} from './gMap.terrain.styles';
 import {BoundaryLayer} from './gMap.BoundaryLayer';
-class gMapController{
+class gMapController implements ng.IController{
   private lastZoom;
   private map;
   private boundaryOverlay;
