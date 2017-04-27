@@ -48,7 +48,7 @@ export class AuthController {
           .then ((user)=>{
             this.closeModal();
             this.$sessionStorage.user = user;
-            this.toastr.success(`Welcome, ${user.username}`, this.AUTHENTICATION_STATUS.success);
+            this.toastr.success(`Welcome!`, this.AUTHENTICATION_STATUS.success);
             this.$state.go('home', {username: user.username}, {reload: true, notify: true});
         }).catch((e)=>{
           this.$sessionStorage.error('401 unauthorized');
