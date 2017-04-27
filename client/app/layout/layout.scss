@@ -49,6 +49,17 @@
     transition: 0.3s
 }
 
+uib-accordian{
+    padding: 0px 0px 0px 0px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+    color: #ADD8E6;
+
+}
+
 .sidenav a:hover, .offcanvas button:focus{
     color: #f1f1f1;
 }
@@ -81,4 +92,13 @@
 
 #sidebarButton{
   float: right;
+}
+
+#username{
+  text-align: center;
+}
+
+#sidebarButton{
+  padding-right: 2%;
+  padding-top: 2%;
 }
