@@ -94,13 +94,16 @@ export class BoundaryLayer{
     let values = [];
     this.placeCoords.forEach((place) => {
       if (place.data && this.checkBounds(place.bounds)){
-        values.push(place.data);
+        if (place.data && place.data !== 'undefined'){
+          values.push(place.data);
+        }
       }
     })
     this.dataMax = Math.max(...values)
     this.dataMin = Math.min(...values)
     this.$rootScope.$emit('createLegend', {min:this.dataMin,max:this.dataMax});
     this.generateColorRange();
+    console.log(this.placeCoords.get('California'))
   }
 
   public getBoundaries(){
