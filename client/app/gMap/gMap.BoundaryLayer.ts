@@ -10,6 +10,7 @@ export class BoundaryLayer{
   private ctx;
   private centerPoint;
   private placeCoords;
+  private colorScale;
   public dataMax;
   public dataMin;
   public boundaryType:string;
@@ -24,28 +25,33 @@ export class BoundaryLayer{
   }
   private colorPicker(place){
     if (place.data){
-      return this.colorRange(place.data);
+      return this.colorScale(place.data);
     }else{
       return `rgb(0, 0, 0)`;
     }
   }
-  private colorRange(data){
+  private generateColorRange(){
     let scale = scaleLinear()
       .domain([this.dataMin,this.dataMax])
       .range(['yellow','red']);
-    return scale(data);
+    this.colorScale = scale;
   }
 
   public drawOverlay(overlayProjection,canvas,viewBounds,lastViewBounds,centerPoint,metric){
-    this.overlayProjection = overlayProjection;
-    this.canvas = canvas;
-    this.viewBounds = viewBounds;
-    this.lastViewBounds = lastViewBounds;
-    this.centerPoint = centerPoint;
-    this.metric = metric;
-    this.ctx = this.canvas.getContext('2d');
-    this.ctx.globalAlpha = 0.4;
-    this.getBoundaries();
+    if (this.placeCoords.size > 3000){
+      this.placeCoords = new Map();
+      this.$rootScope.$emit('redrawMap');
+    }else{
+      this.overlayProjection = overlayProjection;
+      this.canvas = canvas;
+      this.viewBounds = viewBounds;
+      this.lastViewBounds = lastViewBounds;
+      this.centerPoint = centerPoint;
+      this.metric = metric;
+      this.ctx = this.canvas.getContext('2d');
+      this.ctx.globalAlpha = 0.4;
+      this.getBoundaries();
+    }
   }
 
   public projectBorder(place){
@@ -87,13 +93,14 @@ export class BoundaryLayer{
   public checkMinMax(){
     let values = [];
     this.placeCoords.forEach((place) => {
-      if (place.data){
+      if (place.data && this.checkBounds(place.bounds)){
         values.push(place.data);
       }
     })
     this.dataMax = Math.max(...values)
     this.dataMin = Math.min(...values)
     this.$rootScope.$emit('createLegend', {min:this.dataMin,max:this.dataMax});
+    this.generateColorRange();
   }
 
   public getBoundaries(){
@@ -102,7 +109,6 @@ export class BoundaryLayer{
       return () => {
         this.checkMinMax()
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
-
         this.placeCoords.forEach((place) => {
           this.drawBorder(place,this.colorPicker(place));
         })

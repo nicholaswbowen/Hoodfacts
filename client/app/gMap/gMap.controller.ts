@@ -3,114 +3,127 @@ import * as GoogleMapsLoader from 'google-maps';
 import {MAP_TERRAIN_STYLE} from './gMap.terrain.styles';
 import {BoundaryLayer} from './gMap.BoundaryLayer';
 class gMapController{
-  public map;
-  public boundaryOverlay;
-  public canvasLayer;
-  public $onInit;
-  public lastBounds;
-  public currentBounds;
-  public mapsize;
+  private lastZoom;
+  private map;
+  private boundaryOverlay;
+  private canvasLayer;
+  private $onInit;
+  private lastBounds;
+  private currentBounds;
+  private mapsize;
   private metricSelection;
-  public currentBoundaryType:string;
+  private currentBoundaryType:string;
   constructor(private $rootScope, private $sessionStorage){
     this.mapsize = {height: document.getElementById('map').clientHeight, width: document.getElementById('map').clientWidth}
     this.$onInit = () => {
       this.bootStrapMap();
     }
   }
-  public bootStrapMap(){
+  private bootStrapMap(){
     let self = this;
     GoogleMapsLoader.KEY = 'AIzaSyCUVX_TYWU5VOBjTr5B4-lN_H0X9OgNimM';
     GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
     GoogleMapsLoader.load(function(google) {
       self.map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 39.8333333, lng:-98.585522},
-        maxZoom: 13,
-        minZoom: 3,
+        maxZoom: 11,
+        minZoom: 5,
         zoom: 5,
         disableDefaultUI: true,
         zoomControl: true,
         styles: MAP_TERRAIN_STYLE
       });
-
-      // This listener redraws the overlay when the user scrolls around.
-      self.map.addListener('center_changed', () => {
-          self.boundaryOverlay.draw();
-      })
-      //This listener makes sure the map size stays consistent when the window gets resized.
-      google.maps.event.addListener(self.map,'bounds_changed', () => {
-          google.maps.event.trigger(self.map, 'resize');
-      })
-      //This listener is used to trigger a redraw from outside the map, somewhere else in the app.
-      self.$rootScope.$on('redrawMap', (reset) => {
-          self.resetCanvas();
-          google.maps.event.trigger(self.map, 'resize');
-          self.boundaryOverlay.draw();
-      })
-      self.$rootScope.$on('realignMap', (reset) => {
-          google.maps.event.trigger(self.map, 'resize');
-          self.boundaryOverlay.draw();
-      })
-       boundaryOverlay.prototype = new google.maps.OverlayView();
-       function boundaryOverlay(map){
-         this.canvas_ = null;
-         this.setMap(map);
+    self.lastZoom = self.map.zoom;
+    // This listener redraws the overlay when the user scrolls around.
+    self.map.addListener('center_changed', () => {
+        self.boundaryOverlay.draw();
+    })
+    // This listener checks your zoom listener to make the user avoid the sweet-spot where the map loads way too many borders.
+    self.map.addListener('zoom_changed', () => {
+        if (self.map.zoom < 11 && self.map.zoom > 7){
+          if (self.map.zoom < self.lastZoom){
+            self.map.setZoom(7);
+          }else{
+            self.map.setZoom(11);
+          }
+        }
+      self.lastZoom = self.map.zoom;
+    })
+    //This listener makes sure the map size stays consistent when the window gets resized.
+    google.maps.event.addListener(self.map,'bounds_changed', () => {
+        google.maps.event.trigger(self.map, 'resize');
+    })
+    //This listener is used to trigger a redraw from outside the map, somewhere else in the app.
+    self.$rootScope.$on('redrawMap', (reset) => {
+        self.resetCanvas();
+        google.maps.event.trigger(self.map, 'resize');
+        self.boundaryOverlay.draw();
+    })
+    self.$rootScope.$on('realignMap', (reset) => {
+        google.maps.event.trigger(self.map, 'resize');
+        self.boundaryOverlay.draw();
+    })
+     boundaryOverlay.prototype = new google.maps.OverlayView();
+     function boundaryOverlay(map){
+       this.canvas_ = null;
+       this.setMap(map);
+     }
+     boundaryOverlay.prototype.onAdd = function(){
+       let canvas = document.createElement('canvas');
+       self.currentBoundaryType = self.checkMapZoom();
+       canvas.setAttribute('id','boundaryOverlay');
+       this.canvas_ = canvas;
+     }
+     boundaryOverlay.prototype.onRemove = function() {
+       this.canvas_.parentNode.removeChild(this.canvas_);
+       this.canvas_ = null;
+     };
+     boundaryOverlay.prototype.draw = function() {
+       console.log(self.map)
+       let panes = this.getPanes();
+       let projection = this.getProjection();
+       let centerPoint = projection.fromLatLngToDivPixel(this.map.getCenter());
+       var bounds = self.map.getBounds();
+       self.mapsize = {height: document.getElementById('map').offsetHeight, width: (document.getElementById('map').offsetWidth)};
+       this.canvas_.style.left = (centerPoint.x - self.mapsize.width  / 2) + 'px';
+       this.canvas_.style.top  = (centerPoint.y - self.mapsize.height / 2) + 'px';
+       this.canvas_.setAttribute('width', self.mapsize.width);
+       this.canvas_.setAttribute('height', self.mapsize.height);
+       //
+       if (panes.overlayLayer.firstChild){
+         panes.overlayLayer.removeChild(panes.overlayLayer.firstChild);
        }
-       boundaryOverlay.prototype.onAdd = function(){
-         let canvas = document.createElement('canvas');
-         self.currentBoundaryType = self.checkMapZoom();
-         canvas.setAttribute('id','boundaryOverlay');
-         this.canvas_ = canvas;
+       panes.overlayLayer.appendChild(this.canvas_);
+
+       let newBoundaryType = self.checkMapZoom();
+       if (self.currentBoundaryType !== newBoundaryType){
+         self.resetCanvas();
        }
-       boundaryOverlay.prototype.onRemove = function() {
-         this.canvas_.parentNode.removeChild(this.canvas_);
-         this.canvas_ = null;
-       };
-       boundaryOverlay.prototype.draw = function() {
-         let panes = this.getPanes();
-         let projection = this.getProjection();
-         let centerPoint = projection.fromLatLngToDivPixel(this.map.getCenter());
-         var bounds = self.map.getBounds();
-         self.mapsize = {height: document.getElementById('map').offsetHeight, width: (document.getElementById('map').offsetWidth)};
-         this.canvas_.style.left = (centerPoint.x - self.mapsize.width  / 2) + 'px';
-         this.canvas_.style.top  = (centerPoint.y - self.mapsize.height / 2) + 'px';
-         this.canvas_.setAttribute('width', self.mapsize.width);
-         this.canvas_.setAttribute('height', self.mapsize.height);
-         //
-         if (panes.overlayLayer.firstChild){
-           panes.overlayLayer.removeChild(panes.overlayLayer.firstChild);
-         }
-         panes.overlayLayer.appendChild(this.canvas_);
+       //if wer are at a state zoomlevel, add an offset.
+       let offset;
+       if (self.currentBoundaryType == 'states'){
+         offset = 2.5;
+       }else{
+         offset = 0;
+       }
+       self.currentBounds = self.setBounds(bounds.getNorthEast(),bounds.getSouthWest(),offset);
+       // initialize a new layer if there isn't one, if there is , call drawOverlay.
+       if (!self.canvasLayer){
+         self.canvasLayer = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),newBoundaryType,self.metricSelection,self.$rootScope);
+       }else{
+         self.canvasLayer.drawOverlay(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),self.metricSelection);
+       }
 
-
-         let newBoundaryType = self.checkMapZoom();
-         if (self.currentBoundaryType !== newBoundaryType){
-           self.resetCanvas();
-         }
-         let offset;
-         if (self.currentBoundaryType == 'cities'){
-           offset = .1;
-         }else if (self.currentBoundaryType == 'states'){
-           offset = 5;
-         }
-         self.currentBounds = self.setBounds(bounds.getNorthEast(),bounds.getSouthWest(),offset);
-         if (!self.canvasLayer){
-           self.canvasLayer = new BoundaryLayer(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),newBoundaryType,self.metricSelection,self.$rootScope);
-         }else{
-           self.canvasLayer.drawOverlay(projection,this.canvas_,self.currentBounds,self.lastBounds,this.map.getCenter(),self.metricSelection);
-         }
-
-         self.lastBounds = self.currentBounds;
-         self.currentBoundaryType = newBoundaryType;
-       };
-       self.addSearchBox();
-       self.boundaryOverlay = new boundaryOverlay(self.map);
+       self.lastBounds = self.currentBounds;
+       self.currentBoundaryType = newBoundaryType;
+     };
+     self.addSearchBox();
+     self.boundaryOverlay = new boundaryOverlay(self.map);
 
      });
   }
 
-  public addSearchBox(){
-    // sourced from https://developers.google.com/maps/documentation/javascript/examples/places-searchbox
+  private addSearchBox(){
     let map = this.map;
     let input = document.getElementById('pac-input');
     let searchBox = new google.maps.places.SearchBox(input);
@@ -144,6 +157,7 @@ class gMapController{
           console.log("Returned place contains no geometry");
           return;
         }
+        console.log(map)
         let icon = {
           url: place.icon,
           size: new google.maps.Size(71, 71),
@@ -173,7 +187,7 @@ class gMapController{
   }
 
 
-  public checkMapZoom(){
+  private checkMapZoom(){
     let checkChanged = this.$rootScope.mapZoomLevel;
     let result;
     if (this.map.zoom <= 8){
@@ -194,7 +208,7 @@ class gMapController{
     this.canvasLayer = undefined;
     this.lastBounds = undefined;
   }
-  public setBounds(ne,sw,OFFSET){
+  private setBounds(ne,sw,OFFSET){
     let viewBounds:any = {};
     viewBounds.xMax = ne.lat()+OFFSET;
     viewBounds.yMax = ne.lng()+OFFSET;

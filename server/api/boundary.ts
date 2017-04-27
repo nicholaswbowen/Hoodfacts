@@ -37,7 +37,7 @@ router.get('/boundary', function(req, res, next) {
   let addToQueue = (place) => {
     //push all the promises into an array so we know when to end the response.
     extractQueue.push(
-      activeDataModel.findOne({'locationName': place.name, 'subtype': req.query.dataTarget})
+      activeDataModel.findOne({'locationName': place.name, 'subtype': req.query.dataTarget}, {locationName: 1, data: 1})
         .then((result) => {
           res.write(`{"name":"${place.name}", "data":"${result.data}"}`);
         })
