@@ -7,7 +7,7 @@ class gMapController{
   private map;
   private boundaryOverlay;
   private canvasLayer;
-  private $onInit;
+  public $onInit;
   private lastBounds;
   private currentBounds;
   private mapsize;
