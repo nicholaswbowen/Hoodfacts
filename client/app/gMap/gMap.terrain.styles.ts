@@ -90,7 +90,7 @@ export const MAP_TERRAIN_STYLE = [
                 "visibility": "off"
             },
             {
-                "hue": "#ff0000"
+                "hue": "#efefef"
             }
         ]
     },
@@ -120,7 +120,7 @@ export const MAP_TERRAIN_STYLE = [
         "elementType": "geometry.fill",
         "stylers": [
             {
-                "color": "#ffffff"
+                "color": "#efefef"
             }
         ]
     },
@@ -198,7 +198,7 @@ export const MAP_TERRAIN_STYLE = [
         "elementType": "geometry.fill",
         "stylers": [
             {
-                "color": "#FFD27F"
+                "color": "#cc8400"
             }
         ]
     },
@@ -315,7 +315,7 @@ export const MAP_TERRAIN_STYLE = [
         "elementType": "geometry.fill",
         "stylers": [
             {
-                "color": "#ADD8E6"
+                "color": "#61968F"
             }
         ]
     },
