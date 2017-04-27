@@ -6240,7 +6240,9 @@ button.close {
   text-align: center; }
 
 .panel-default {
-  background-color: #ADD8E6; }
+  background-color: black;
+  border-radius: 0px;
+  border-color: black; }
 
 .makeItWork {
-  background-color: #FFD07D; }
+  background-color: black; }
