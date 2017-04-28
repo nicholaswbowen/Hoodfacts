@@ -10,6 +10,8 @@
     <a ng-click="vm.openProfile()" ng-if="vm.isAuthenticated">Profile</a>
     <a ui-sref="usersIndex" ng-if="vm.isAuthenticated && vm.isAuthorized('admin')">Users Index</a>
     <select-metric></select-metric>
+    <br>
+    <a ui-sref="about">About Us</a>
   </div>
 
 </div>
