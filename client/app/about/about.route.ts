@@ -10,3 +10,4 @@ const route = function route($stateProvider) {
 route.$inject = ['$stateProvider'];
 
 export default route;
+ 

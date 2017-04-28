@@ -13,3 +13,4 @@ export default angular.module('app.about', [])
   })
   .config(route)
   .name;
+ 
