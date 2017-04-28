@@ -17,6 +17,8 @@ import SplashPage from './splashPage/splashPage.module';
 import SelectMetric from './selectMetric/selectMetric.module';
 import legend from './legend/legend.module';
 import about from './about/about.module';
+import contact from './contact/contact.module';
+
 const name = 'app';
 const dependencies = [
   'ui.bootstrap',
@@ -33,7 +35,8 @@ const dependencies = [
   SplashPage,
   SelectMetric,
   legend,
-  about
+  about,
+  contact
 ];
 
 angular.module(name, dependencies)
