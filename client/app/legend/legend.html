@@ -1,0 +1,18 @@
+<div style="background-color: #efefef;">
+  <div ng-if="vm.$rootScope.mapZoomLevel=='states'" class="legend-label">{{vm.$rootScope.currentStateMetric}}</div>
+  <div ng-if="vm.$rootScope.mapZoomLevel=='cities'" class="legend-label">{{vm.$rootScope.currentCityMetric}}</div>
+
+
+
+  <svg id='legendSvg' width="100%" height="60" version="1.1" xmlns="http://www.w3.org/2000/svg" style = "margin: 0 0 0 0;">
+    <defs>
+        <linearGradient id="Gradient" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stop-color="rgba(255,255,0,0.4)"/>
+          <stop offset="100%" stop-color="rgba(255,0,0,0.4)"/>
+        </linearGradient>
+    </defs>
+
+    <rect id="legendGradient" x="12.5%" y="35"  width="75%" height="25" fill="url(#Gradient)"  style="stroke-width:1;stroke:rgb(0,0,0)" />
+    <g id="legendTickMarks"></g>
+  </svg>
+</div>

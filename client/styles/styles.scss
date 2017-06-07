@@ -1,0 +1,54 @@
+@import 'variables/cyborg.scss';
+@import '../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+
+.cursor:hover {
+  cursor: pointer;
+}
+
+.nav-link.active {
+  text-decoration: underline;
+}
+#mapContainer{
+  position:absolute;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+}
+#map{
+  margin: 0,0,0,0;
+  height:100%;
+  position: absolute;
+  z-index: 101;
+}
+#boundaryOverlay{
+  position: relative;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+.danger {
+  color:red;
+}
+
+.intro{
+  text-align: center;
+}
+.panel-default{
+  background-color: #111;
+  border-radius: 0px;
+  border-color: black;
+}
+.makeItWork{
+  background-color: #111;
+}
+#center{
+  text-align: center;
+}
+.pic{
+  height: 100px;
+  width: 100px;
+  border: 3px solid #888888;
+  border-radius: 30px;
+}

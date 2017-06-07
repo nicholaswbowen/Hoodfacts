@@ -1,0 +1,22 @@
+<div id="sidenavContainer">
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" ng-click="vm.closeNav()">&times;</a>
+
+    <!--home-->
+    <a ui-sref="home">Home</a>
+    <!--login/register-->
+    <a ng-click="vm.openAuth()" ng-if="vm.currentUser && !vm.isAuthenticated">Login/Register</a>
+    <a ng-if="vm.currentUser && vm.isAuthenticated" ng-click="vm.logout()">Logout</a>
+    <a ng-click="vm.openProfile()" ng-if="vm.isAuthenticated">Profile</a>
+    <a ui-sref="usersIndex" ng-if="vm.isAuthenticated && vm.isAuthorized('admin')">Users Index</a>
+    <select-metric></select-metric>
+    <br>
+    <a ui-sref="about">About Us</a>
+    <a ui-sref="contact">Contact Us</a>
+
+  </div>
+
+</div>
+<!-- Use any element to open the sidenav -->
+<div id="sidebarButton" ng-click="vm.openNav()"><img style="width: 125px;" src="client/assets/menu.png">
+</div>
