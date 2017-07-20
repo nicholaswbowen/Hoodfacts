@@ -1,4 +1,4 @@
-import * as angular from 'angular';
+import * as ng from 'angular';
 export default [
   '$rootScope',
   'UserService',
@@ -28,10 +28,10 @@ export default [
     $rootScope.$on('$stateChangeStart', (event, next) => {
       UserService.getCurrentUser().then((user) => {
         $sessionStorage.user = user;
-        !user['username'] ? $localStorage['token'] = {} : angular.noop();
+        !user['username'] ? $localStorage['token'] = {} : ng.noop();
       }).catch((user) => {
         $sessionStorage.user = user;
-        !user['username'] ? $localStorage['token'] = {} : angular.noop();
+        !user['username'] ? $localStorage['token'] = {} : ng.noop();
       });
 
       if (next.data) {
