@@ -4,7 +4,6 @@ import coreFilters from './core.filters';
 import authInterceptor from './interceptor.factory';
 import {ProfileService} from '../services/profile.service';
 
-import 'ngStorage';
 import 'angular-resource';
 import 'angular-messages';
 import 'angular-ui-bootstrap';
@@ -21,7 +20,6 @@ export default angular.module('app.core', [
   'ui.bootstrap',
   'ngResource',
   'ngMessages',
-  'ngStorage',
   'toastr',
   coreConstants,
   coreFilters,
