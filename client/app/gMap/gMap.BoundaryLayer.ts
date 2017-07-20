@@ -81,7 +81,6 @@ export class BoundaryLayer{
   }
   public createQuery() {
     let boundsQuery = `&xMax=${this.viewBounds.xMax}&yMax=${this.viewBounds.yMax}&xMin=${this.viewBounds.xMin}&yMin=${this.viewBounds.yMin}&dataTarget=${this.metric}`
-    let url;
     if (this.lastViewBounds){
       let excludeQuery = `&exMax=${this.lastViewBounds.xMax}&eyMax=${this.lastViewBounds.yMax}&exMin=${this.lastViewBounds.xMin}&eyMin=${this.lastViewBounds.yMin}`
       return `/api/boundary/?searchBy=${this.boundaryType}&exclude=true${boundsQuery}${excludeQuery}`

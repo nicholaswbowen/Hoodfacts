@@ -1,11 +1,12 @@
 // http://webpack.github.io/analyse/#hints
 // webpack --config webpack/webpack.config.js --profile --json > stats.json
 var webpack = require('webpack');
-var isProd = JSON.parse(process.env.PROD_ENV || '0'); // `PROD_ENV=1 webpack`
+var isProd = JSON.parse(process.env.NODE_ENV === 'production' ? 1 : 0); // `PROD_ENV=1 webpack`
 var analyze = JSON.parse(process.env.ANALYZE || '0');
 var path = require('path');
 var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+console.log(isProd)
 module.exports = {
   cache: true,
   entry: [
