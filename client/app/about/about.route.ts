@@ -1,4 +1,4 @@
-declare var $inject;
+
 const route = function route($stateProvider) {
   $stateProvider
     .state('about', {

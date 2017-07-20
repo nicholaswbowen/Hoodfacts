@@ -1,3 +1,4 @@
+/// <reference path="../../node_modules/@types/angular/index.d.ts" />
 import * as angular from 'angular';
 import config from './app.config';
 import run from './app.run';
