@@ -26,7 +26,6 @@
   "author": "Brandon Morrison",
   "license": "ISC",
   "dependencies": {
-    "@mapbox/geojson-normalize": "0.0.1",
     "@types/angular": "^1.6.27",
     "@types/angular-mocks": "^1.5.9",
     "@types/angular-resource": "^1.5.8",
