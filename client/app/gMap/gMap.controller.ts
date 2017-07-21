@@ -79,7 +79,6 @@ class gMapController implements ng.IController{
        this.canvas_ = null;
      };
      boundaryOverlay.prototype.draw = function() {
-       console.log(self.map)
        let panes = this.getPanes();
        let projection = this.getProjection();
        let centerPoint = projection.fromLatLngToDivPixel(this.map.getCenter());
