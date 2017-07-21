@@ -4,7 +4,7 @@ import coreFilters from './core.filters';
 import authInterceptor from './interceptor.factory';
 import {ProfileService} from '../services/profile.service';
 
-import 'ngStorage';
+import * as ngStorage from 'ngStorage';
 import 'angular-resource';
 import 'angular-messages';
 import 'angular-ui-bootstrap';
