@@ -50,7 +50,7 @@ mongoose.connect(process.env.MONGO_URI)
       if (err) return;
       if (user) return;
       if (!user)
-        var admin = new User();
+        var admin:any = new User();
         admin.email = process.env.ADMIN_EMAIL;
         admin.username = process.env.ADMIN_USERNAME;
         admin.setPassword(process.env.ADMIN_PASSWORD);
