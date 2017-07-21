@@ -102,7 +102,6 @@ export class BoundaryLayer{
     this.dataMin = Math.min(...values)
     this.$rootScope.$emit('createLegend', {min:this.dataMin,max:this.dataMax});
     this.generateColorRange();
-    console.log(this.placeCoords.get('California'))
   }
 
   public getBoundaries(){

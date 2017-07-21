@@ -19,12 +19,10 @@ router.post('/auth/register', function(req, res, next) {
     // this is a validation error so 400 bad req
     if (err) return next({message: 'user did not save', error: err});
     let userProfile = new Profile();
-    console.log(req.body);
     userProfile.username = req.body.username;
     userProfile.email = req.body.email;
     userProfile.save((err, profile) => {
         if (err) return next({error: err});
-        console.log(profile);
         res.status(200).json({ message: 'Registration complete.' });
     });
   });

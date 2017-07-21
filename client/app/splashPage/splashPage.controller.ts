@@ -11,7 +11,6 @@ class SplashPageController implements ng.IController {
     private $localStorage,
     private $uibModal
   ) {
-    console.log ('You are on the Splash Page')
     this.$onInit = function() {
       this.user = SessionService.getUser();
     };
